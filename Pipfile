@@ -6,6 +6,12 @@ name = "pypi"
 [packages]
 decouple = "*"
 django = "*"
+djangorestframework = "*"
+pillow = "*"
+python-decouple = "*"
+psycopg2 = "*"
+drf-yasg = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 
