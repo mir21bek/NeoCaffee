@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import StaffUser
 
-# Register your models here.
+
+@admin.register(StaffUser)
+class StaffUser(admin.ModelAdmin):
+    list_display = ('username', 'name', 'surname')

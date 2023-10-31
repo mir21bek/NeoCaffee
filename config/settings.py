@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--o1f(-s9z+d@m%&d&=+%tt6w!+fbham=bj)xkl9(6p#$iyi2yb'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -30,6 +31,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'corsheaders',
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +73,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'postgres': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'USER': config('USER'),
+        'NAME': config('NAME'),
+        'PASSWORD': config('PASSWORD'),
+        'HOST': config('HOST'),
+        'PORT': config('PORT'),
     }
 }
 
@@ -97,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'Asia/Bishkek'
 
@@ -119,3 +129,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+AUTH_USER_MODEL = 'users.StaffUser'
