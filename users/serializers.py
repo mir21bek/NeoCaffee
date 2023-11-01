@@ -21,8 +21,9 @@ class StaffUserSerializers(serializers.ModelSerializer):
         user = StaffUser.objects.create_user(username=username)
         user.set_password(validated_data['password'])
         user.save()
+        return user
 
     def update(self, instance, validated_data):
-        instance.username = validated_data('username', instance.username)
+        instance.username = validated_data.get('username', instance.username)
         instance.save()
         return instance
