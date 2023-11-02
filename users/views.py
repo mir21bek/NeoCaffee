@@ -34,11 +34,11 @@ def signup(request):
         try:
             data = JSONParser().parse(request)
             user = StaffUser.objects.create_user(username=data['username'], password=data['password'])
+            token = Token.objects.create(user=user)
 
             # Вызываем сигнал после успешного создания пользователя
             post_user_save(sender=StaffUser, instance=user, created=True)
 
-            token = Token.objects.create(user=user)
             return JsonResponse({'token': str(token)}, status=201)
         except IntegrityError:
             return JsonResponse({'error': 'Username taken. Choose another username.'}, status=400)
