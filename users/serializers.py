@@ -37,6 +37,7 @@ class StaffUserSerializers(serializers.ModelSerializer):
         """
         Обновляет существующего пользователя StaffUser с новыми данными.
         """
+
         instance.username = validated_data.get('username', instance.username)
         instance.save()
         return instance
