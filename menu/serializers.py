@@ -11,7 +11,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['name']  # Поля модели Category, включаемые в сериализацию
+        fields = ('name', 'image')  # Поля модели Category, включаемые в сериализацию
 
     def create(self, validated_data):
         """Создает новый объект Category."""
@@ -21,6 +21,7 @@ class CategorySerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """Обновляет существующий объект Category."""
         instance.name = validated_data.get('name', instance.name)
+        instance.image = validated_data.get('image', instance.image)
         instance.save()
 
     def __delete__(self, instance):
