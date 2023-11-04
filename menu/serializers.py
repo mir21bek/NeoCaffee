@@ -35,8 +35,6 @@ class MenuSerializer(serializers.ModelSerializer):
     Преобразует объекты Menu в JSON и обратно.
     """
 
-    category = serializers.ReadOnlyField()
-
     class Meta:
         model = Menu
         fields = ('name', 'category', 'description', 'image', 'price', 'available', 'popular')
@@ -50,6 +48,7 @@ class MenuSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """Обновляет существующий объект Menu."""
         instance.name = validated_data.get('name', instance.name)
+        instance.category = validated_data.get('category', instance.category)
         instance.description = validated_data.get('description', instance.description)
         instance.image = validated_data.get('image', instance.image)
         instance.price = validated_data.get('price', instance.price)

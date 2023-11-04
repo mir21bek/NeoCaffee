@@ -57,6 +57,10 @@ class MenuCreateUpdateApiView(viewsets.ModelViewSet):
 
 
 class ExtraItemViewSet(viewsets.ModelViewSet):
+    """Представление для создания, обновления, удаления и получения доп. продуктов
+        Это представление позволяет создавать (POST), обновлять (PUT, PATCH), удалять (DELETE) и
+        получать (GET) объекты категорий. Требует прав администратора для выполнения операций изменения.
+    """
     queryset = ExtraItem.objects.all()
     serializer_class = ExtraItemSerializer
     permission_classes = [permissions.IsAdminUser]
