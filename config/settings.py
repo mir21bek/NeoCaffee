@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'users.apps.UsersConfig',
     'menu.apps.MenuConfig',
+    'branches.apps.BranchesConfig',
 ]
 
 MIDDLEWARE = [
