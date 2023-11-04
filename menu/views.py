@@ -1,6 +1,6 @@
 from rest_framework import generics, permissions, viewsets
-from .models import Category, Menu
-from .serializers import CategorySerializer, MenuSerializer
+from .models import Category, Menu, ExtraItem
+from .serializers import CategorySerializer, MenuSerializer, ExtraItemSerializer
 from .signals import post_category_save, post_menu_save
 
 
@@ -54,3 +54,9 @@ class MenuCreateUpdateApiView(viewsets.ModelViewSet):
         """Метод для создания нового блюда и вызова сигнала после успешного создания."""
         menu_instance = serializer.save()
         post_menu_save(sender=Menu, instance=menu_instance, created=True)
+
+
+class ExtraItemViewSet(viewsets.ModelViewSet):
+    queryset = ExtraItem.objects.all()
+    serializer_class = ExtraItemSerializer
+    permission_classes = [permissions.IsAdminUser]
