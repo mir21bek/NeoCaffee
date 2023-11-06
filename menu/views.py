@@ -1,6 +1,6 @@
 from rest_framework import generics, permissions, viewsets
-from .models import Category, Menu, ExtraItem
-from .serializers import CategorySerializer, MenuSerializer, ExtraItemSerializer
+from .models import Category, Menu, ExtraItem, ExtraProduct
+from .serializers import CategorySerializer, MenuSerializer, ExtraItemSerializer, ExtraProductSerializer
 from .signals import post_category_save, post_menu_save
 
 
@@ -63,4 +63,14 @@ class ExtraItemViewSet(viewsets.ModelViewSet):
     """
     queryset = ExtraItem.objects.all()
     serializer_class = ExtraItemSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+
+class ExtraProductViewSet(viewsets.ModelViewSet):
+    """Представление для создания, обновления, удаления и получения продуктов и доп. продуктов
+            Это представление позволяет создавать (POST), обновлять (PUT, PATCH), удалять (DELETE) и
+            получать (GET) объекты категорий. Требует прав администратора для выполнения операций изменения.
+        """
+    serializer_class = ExtraProductSerializer
+    queryset = ExtraProduct.objects.all()
     permission_classes = [permissions.IsAdminUser]

@@ -4,9 +4,10 @@ from .views import *
 
 # Инициализация маршрутизатора для автоматической генерации URL-путей на основе представлений ViewSet
 router = routers.DefaultRouter()
-router.register('create-category', CategoryCreateApiView, basename='create-category')  # Путь для создания и управления категориями
-router.register('create-menu', MenuCreateUpdateApiView, basename='create-menu')# Путь для создания и управления блюдами
-router.register('extra-item', ExtraItemViewSet, basename='extra-item')# Путь для создания и управления дополнительными продуктами
+router.register('create-category', CategoryCreateApiView, basename='create-category')
+router.register('create-menu', MenuCreateUpdateApiView, basename='create-menu')
+router.register('extra-item', ExtraItemViewSet, basename='extra-item')
+router.register('extra-product', ExtraProductViewSet)
 
 # URL-пути, связанные с обычными представлениями (не ViewSet)
 urlpatterns = [

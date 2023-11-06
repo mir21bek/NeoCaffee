@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Category, Menu, ExtraItem
+from .models import Category, Menu, ExtraItem, ExtraProduct
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -23,10 +23,6 @@ class CategorySerializer(serializers.ModelSerializer):
         instance.name = validated_data.get('name', instance.name)
         instance.image = validated_data.get('image', instance.image)
         instance.save()
-
-    def __delete__(self, instance):
-        """Удаляет объект Category."""
-        instance.delete()
 
 
 class MenuSerializer(serializers.ModelSerializer):
@@ -56,10 +52,6 @@ class MenuSerializer(serializers.ModelSerializer):
         instance.popular = validated_data.get('popular', instance.popular)
         instance.save()
 
-    def __delete__(self, instance):
-        """Удаляет объект Menu."""
-        instance.delete()
-
 
 class ExtraItemSerializer(serializers.ModelSerializer):
     """Сериализатор для модели ExtraItem."""
@@ -79,6 +71,8 @@ class ExtraItemSerializer(serializers.ModelSerializer):
         instance.price = validated_data.get('price', instance.price)
         instance.save()
 
-    def __delete__(self, instance):
-        """Удаляет объект ExtraItem."""
-        instance.delete()
+
+class ExtraProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExtraProduct
+        fields = ('menu', 'extra')
