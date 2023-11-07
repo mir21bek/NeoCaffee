@@ -17,12 +17,18 @@ class StaffUserCreateApi(generics.CreateAPIView):
     API-представление для создания и просмотра пользователей StaffUser.
     Позволяет администраторам создавать новых пользователей и просматривать список существующих пользователей.
     """
+
+    permission_classes = [permissions.IsAdminUser]
+
+    def get_serializer_class(self):
+        return StaffUserSerializers
+
     def post(self, request, *args, **kwargs):
-        serializer = StaffUserSerializers(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             token, created = Token.objects.get_or_create(user=user)
-            post_user_save(sender=StaffUser, instance=token, created=True)
+            post_user_save(sender=StaffUser, instance=user, created=True)
             return Response({'token': token.key}, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
