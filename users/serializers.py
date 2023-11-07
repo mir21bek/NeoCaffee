@@ -14,7 +14,9 @@ class StaffUserSerializers(serializers.ModelSerializer):
         """
         Создает нового пользователя StaffUser с указанным именем пользователя и паролем.
         """
-        user = StaffUser.objects.create_user(**validated_data)
+        username = validated_data['username']
+        password = validated_data['password']
+        user = StaffUser.objects.create_user(username=username)
         user.set_password(validated_data['password'])
         return user
 
