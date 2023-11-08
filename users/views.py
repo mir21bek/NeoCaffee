@@ -17,9 +17,6 @@ class StaffUserCreateApi(generics.CreateAPIView):
     API-представление для создания и просмотра пользователей StaffUser.
     Позволяет администраторам создавать новых пользователей и просматривать список существующих пользователей.
     """
-
-    permission_classes = [permissions.IsAdminUser]
-
     def get_serializer_class(self):
         return StaffUserSerializers
 
@@ -37,7 +34,10 @@ class StaffUserCreateApi(generics.CreateAPIView):
 class StaffUserLogin(APIView):
     @staticmethod
     def post(request):
-        user = authenticate(username=request.data.get('username'), password=request.data.get('password'))
+        user = authenticate(
+            username=request.data.get('username'),
+            password=request.data.get('password')
+        )
         if user:
             token, created = Token.objects.get_or_create(user=user)
             return Response({'token': token.key}, status=status.HTTP_200_OK)
@@ -50,8 +50,7 @@ class StaffUserLogout(APIView):
 
     @staticmethod
     def post(request):
-        token, created = Token.objects.get_or_create(user=request.user)
-        token.delete()
+        request.delete()
         return Response({'message': 'Вы успешно вышли, ждем вас снова.'})
 
 
