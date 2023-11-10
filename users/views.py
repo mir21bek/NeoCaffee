@@ -1,3 +1,5 @@
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
 from rest_framework.authtoken.models import Token
 from rest_framework import permissions
@@ -32,17 +34,29 @@ class StaffUserCreateApi(generics.CreateAPIView):
 
 
 class StaffUserLogin(APIView):
-    @staticmethod
-    def post(request):
-        user = authenticate(
-            username=request.data.get('username'),
-            password=request.data.get('password')
-        )
-        if user:
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key}, status=status.HTTP_200_OK)
-        else:
-            return Response({'errors': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['username', 'password'],
+            properties={
+                'username': openapi.Schema(type=openapi.TYPE_STRING),
+                'password': openapi.Schema(type=openapi.TYPE_STRING),
+            },
+        ),
+        responses={200: 'Token is returned successfully', 400: 'Invalid credentials'},
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = StaffUserLoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = authenticate(
+                username=request.data.get('username'),
+                password=request.data.get('password')
+            )
+            if user:
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({'token': token.key}, status=status.HTTP_200_OK)
+            else:
+                return Response({'errors': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class StaffUserLogout(APIView):

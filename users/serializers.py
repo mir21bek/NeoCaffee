@@ -29,6 +29,11 @@ class StaffUserSerializers(serializers.ModelSerializer):
         return instance
 
 
+class StaffUserLoginSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=150)
+    password = serializers.CharField(required=True, write_only=True)
+
+
 class StaffUsersProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffUsersProfile
