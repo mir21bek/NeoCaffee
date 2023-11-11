@@ -10,7 +10,7 @@ schema_view = get_schema_view(
    openapi.Info(
       title="This is API for future NeoCaffee CRM systems",
       default_version='v1',
-      description="Please enjoy use this API end keep calm )) with love you'r teammate Mirbek and Asel",
+      description="Please enjoy using this API end keep calm )) with love your teammates Mirbek and Asel",
       terms_of_service="https://www.google.com/policies/terms/",
       contact=openapi.Contact(email="contact@snippets.local"),
       license=openapi.License(name="BSD License"),
@@ -28,7 +28,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth-users/', include('users.urls')),
     path('api-menu/', include('menu.urls')),
-    path('api-branches/', include('branches.urls'))
+    path('api-branches/', include('branches.urls')),
+    path('api-customers/', include('customers.urls')),
 ]
 
 if settings.DEBUG:
