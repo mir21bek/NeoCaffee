@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status, generics, exceptions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from drf_yasg.utils import swagger_auto_schema
 from .utils import generate_otp, send_otp
 from .models import User
 from .serializers import RegistrationSerializer, LoginSerializer, CheckOPTSerializer, ProfileSerializer, LogoutSerializer
@@ -62,6 +63,10 @@ class CheckOTPView(generics.GenericAPIView):
 class LoginView(APIView):
     serializer_class = LoginSerializer
 
+    @swagger_auto_schema(
+        request_body=LoginSerializer,
+        responses={200: 'OK', 404: 'Not Found'},
+    )
     def post(self, request):
         phone_number = request.data.get('phone_number', '')
         try:
