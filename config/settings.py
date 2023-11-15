@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'menu.apps.MenuConfig',
     'branches.apps.BranchesConfig',
     'customers.apps.CustomersConfig',
+    'administrator.apps.AdministratorConfig',
 ]
 
 MIDDLEWARE = [

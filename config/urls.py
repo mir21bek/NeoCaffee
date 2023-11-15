@@ -30,6 +30,7 @@ urlpatterns = [
     path('api-menu/', include('menu.urls')),
     path('api-branches/', include('branches.urls')),
     path('api-customers/', include('customers.urls')),
+    path('api-admin/', include('administrator.urls')),
 ]
 
 if settings.DEBUG:
