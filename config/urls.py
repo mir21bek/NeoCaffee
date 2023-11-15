@@ -31,6 +31,7 @@ urlpatterns = [
     path('api-branches/', include('branches.urls')),
     path('api-customers/', include('customers.urls')),
     path('api-admin/', include('administrator.urls')),
+    path('api-order/', include('order.urls')),
 ]
 
 if settings.DEBUG:
