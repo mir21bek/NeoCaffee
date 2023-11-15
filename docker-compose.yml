@@ -11,6 +11,8 @@ services:
       - "5433:5433"
     env_file:
       - .env
+    environment:
+      POSTGRES_PASSWORD: "12345"
 
   web:
     container_name: neocaffee_backend

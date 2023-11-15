@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'menu.apps.MenuConfig',
     'branches.apps.BranchesConfig',
     'customers.apps.CustomersConfig',
-    'administrator.apps.AdministratorConfig',
 ]
 
 MIDDLEWARE = [
@@ -139,9 +138,6 @@ MEDIA_URL = '/food_image/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = [
-    "https://ishak-backender.org.kg"
-]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -158,9 +154,4 @@ SIMPLE_JWT = {
 
 TWILIO_ACCOUNT_SID = config('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = config('TWILIO_AUTH_TOKEN')
-TWILIO_SERVER_SID = config('TWILIO_SERVER_SID')
-
-
-CSRF_TRUSTED_ORIGINS = ['https://ishak-backender.org.kg']
-
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+TWILIO_PHONE_NUMBER = config('TWILIO_SERVER_SID')
