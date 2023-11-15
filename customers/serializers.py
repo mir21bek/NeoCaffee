@@ -4,6 +4,8 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
+    phone_number = serializers.CharField(source='username', required=True)
+
     class Meta:
         model = User
         fields = ['name', 'phone_number', 'date_of_birth']
@@ -11,7 +13,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def save(self):
         user = User(
             name=self.validated_data['name'],
-            phone_number=self.validated_data['phone_number'],
+            username=self.validated_data['username'],
             date_of_birth=self.validated_data['date_of_birth'])
         user.save()
         return user
@@ -26,7 +28,7 @@ class CheckOPTSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.ModelSerializer):
-    phone_number = serializers.CharField(max_length=15)
+    phone_number = serializers.CharField(source='username', required=True, max_length=15)
 
     class Meta:
         model = User
@@ -34,6 +36,8 @@ class LoginSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    phone_number = serializers.CharField(source='username', read_only=True)
+
     class Meta:
         model = User
         fields = ['id', 'name', 'phone_number', 'date_of_birth']

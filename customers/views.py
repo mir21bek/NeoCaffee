@@ -6,7 +6,11 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from drf_yasg.utils import swagger_auto_schema
 from .utils import generate_otp, send_otp
 from .models import User
-from .serializers import RegistrationSerializer, LoginSerializer, CheckOPTSerializer, ProfileSerializer, LogoutSerializer
+from .serializers import (RegistrationSerializer,
+                          LoginSerializer,
+                          CheckOPTSerializer,
+                          ProfileSerializer,
+                          LogoutSerializer)
 
 
 class RegistrationView(generics.GenericAPIView):
@@ -21,7 +25,7 @@ class RegistrationView(generics.GenericAPIView):
         user.otp = otp
         user.save()
 
-        send_otp(user.phone_number, otp)
+        send_otp(user.username, otp)
 
         return Response({'message': 'Verification code has been sent to your phone number.'}, status=status.HTTP_200_OK)
 
@@ -68,9 +72,9 @@ class LoginView(APIView):
         responses={200: 'OK', 404: 'Not Found'},
     )
     def post(self, request):
-        phone_number = request.data.get('phone_number', '')
+        username = request.data.get('phone_number', '')
         try:
-            user = User.objects.get(phone_number=phone_number)
+            user = User.objects.get(username=username)
         except User.DoesNotExist:
             return Response({'error': 'User with this phone number does not exist.'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -82,7 +86,7 @@ class LoginView(APIView):
         user.otp = otp
         user.save()
 
-        send_otp(phone_number, otp)
+        send_otp(username, otp)
 
         return Response({'message': 'One-time password has been sent to your phone number.'}, status=status.HTTP_200_OK)
 
