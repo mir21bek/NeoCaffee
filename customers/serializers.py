@@ -5,7 +5,7 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 class RegistrationSerializer(serializers.ModelSerializer):
     phone_number = serializers.CharField(source='username', required=True)
-
+    date_of_birth = serializers.DateField(format="%d-%m-%Y")
     class Meta:
         model = User
         fields = ['name', 'phone_number', 'date_of_birth']
