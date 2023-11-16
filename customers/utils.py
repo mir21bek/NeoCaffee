@@ -12,6 +12,6 @@ def send_otp(phone_number, otp):
     client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
     message = client.messages.create(
         body=f'Your verification code is: {otp}',
-        from_=settings.TWILIO_PHONE_NUMBER,
+        from_=settings.TWILIO_SERVER_SID,
         to=phone_number
     )
