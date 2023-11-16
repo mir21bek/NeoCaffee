@@ -38,30 +38,26 @@ class CheckOTPView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         otp = serializer.validated_data['otp']
-        code = User.objects.filter(otp=otp, is_verified=False).first()
-        user = request.user
+        user = User.objects.filter(otp=otp, is_verified=False).first()
 
         if not user:
-            raise exceptions.APIException('User not found!')
-
-        if not code:
             raise exceptions.APIException('Code is incorrect!')
 
-        if otp == user.otp:
-            if not user.is_verified:
-                user.is_verified = True
-                user.otp = None
-                user.save()
+        if not user.is_verified:
+            user.is_verified = True
+            user.otp = None
+            user.save()
+
             refresh = RefreshToken.for_user(user)
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token)
-            }, status=status.HTTP_200_OK
-            )
+            }, status=status.HTTP_200_OK)
         else:
             return Response(
-                {'message': 'Please enter the correct verification code.'}, status=status.HTTP_400_BAD_REQUEST
+                {'message': 'User is already verified.'}, status=status.HTTP_400_BAD_REQUEST
             )
+
 
 
 class LoginView(APIView):
