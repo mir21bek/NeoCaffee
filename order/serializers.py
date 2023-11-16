@@ -4,14 +4,14 @@ from .models import Order, OrderItem
 from menu.models import ExtraItem
 
 
-class ExtraItemSerializer(serializers.ModelSerializer):
+class OrderExtraItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExtraItem
         fields = "__all__"
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    extra_product = ExtraItemSerializer()
+    extra_product = OrderExtraItemSerializer()
 
     class Meta:
         model = OrderItem

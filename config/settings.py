@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
+from socket import gethostname
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -16,7 +18,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [gethostname(), "0.0.0.0", "localhost", "127.0.0.1", "www.ishak-backender.org.kg"]
 
 AUTH_USER_MODEL = 'customers.User'
 
@@ -138,8 +140,12 @@ MEDIA_URL = '/food_image/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
 
+CORS_ALLOWED_ORIGINS = [
+    "http://www.ishak-backender.org.kg",
+    "https://www.ishak-backender.org.kg",
+]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
