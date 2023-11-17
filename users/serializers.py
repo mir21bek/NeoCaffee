@@ -37,7 +37,10 @@ class StaffUserLoginSerializer(serializers.Serializer):
 class StaffUsersProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffUsersProfile
-        fields = "__all__"
+        fields = ('id', 'name', 'surname', 'phone_number', 'image',
+                  'birth_date', 'residential_address', 'home_number',
+                  'password_image', 'work_schedules', 'positions', 'is_verified',
+                  'created_at', 'updated_at')
 
     def create(self, validated_data):
         profile = StaffUsersProfile.objects.create(**validated_data)
@@ -53,7 +56,8 @@ class StaffUsersProfileSerializer(serializers.ModelSerializer):
         instance.home_number = validated_data.get('home_number', instance.home_number)
         instance.password_image = validated_data.get('password_image', instance.password_image)
         instance.work_schedule = validated_data.get('work_schedule', instance.work_schedule)
-        instance.is_admin_user = validated_data.get('is_admin_user', instance.is_admin_user)
+        instance.is_admin_user = validated_data.get('positions', instance.positions)
+
         instance.save()
         return instance
 
