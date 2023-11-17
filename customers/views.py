@@ -59,7 +59,6 @@ class CheckOTPView(generics.GenericAPIView):
             )
 
 
-
 class LoginView(APIView):
     serializer_class = LoginSerializer
 
