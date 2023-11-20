@@ -19,7 +19,7 @@ class OrderListCreateView(generics.ListCreateAPIView):
         serializer = self.get_serializer(queryset, many=True)
         for order_data in serializer.data:
             order = Order.objects.get(pk=order_data['id'])
-            order_data['total_cost'] = order.get_total_cost()
+            order_data['total_price'] = order.get_total_cost()
         return Response(serializer.data)
 
 

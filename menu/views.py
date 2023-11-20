@@ -1,6 +1,8 @@
 from rest_framework import generics, permissions, viewsets
-from .models import Category, Menu, ExtraItem, ExtraProduct
-from .serializers import CategorySerializer, MenuSerializer, ExtraItemSerializer, ExtraProductSerializer
+from rest_framework.generics import get_object_or_404
+
+from .models import Category, Menu, ExtraItem
+from .serializers import CategorySerializer, MenuSerializer, ExtraItemSerializer
 from .signals import post_category_save, post_menu_save
 
 
@@ -39,6 +41,21 @@ class MenuListApiView(generics.ListAPIView):
     serializer_class = MenuSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        queryset = Menu.objects.filter(available=True)
+        category_slug = self.kwargs.get('category_slug')
+        if category_slug:
+            category = get_object_or_404(Category, slug=category_slug)
+            queryset = queryset.filter(category=category)
+            return queryset
+
+
+class PopularDishesView(generics.ListAPIView):
+    serializer_class = MenuSerializer
+
+    def get_queryset(self):
+        return Menu.objects.filter(popular=True)[:5]
+
 
 class MenuCreateUpdateApiView(viewsets.ModelViewSet):
     """Представление для создания, обновления, удаления и получения блюд.
@@ -63,14 +80,4 @@ class ExtraItemViewSet(viewsets.ModelViewSet):
     """
     queryset = ExtraItem.objects.all()
     serializer_class = ExtraItemSerializer
-    permission_classes = [permissions.IsAdminUser]
-
-
-class ExtraProductViewSet(viewsets.ModelViewSet):
-    """Представление для создания, обновления, удаления и получения продуктов и доп. продуктов
-            Это представление позволяет создавать (POST), обновлять (PUT, PATCH), удалять (DELETE) и
-            получать (GET) объекты категорий. Требует прав администратора для выполнения операций изменения.
-        """
-    serializer_class = ExtraProductSerializer
-    queryset = ExtraProduct.objects.all()
     permission_classes = [permissions.IsAdminUser]

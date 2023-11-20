@@ -29,14 +29,13 @@ class Order(models.Model):
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE, related_name='order_items')
-    extra_product = models.ForeignKey(ExtraItem, on_delete=models.CASCADE, related_name='extra_order')
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    extra_product = models.ForeignKey(ExtraItem, on_delete=models.CASCADE, null=True, related_name='extra_order')
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return str(self.id)
 
     def get_cost(self):
-        menu_cost = max(Decimal('0'), self.price) * max(Decimal('0'), self.quantity)
-        extra_cost = max(Decimal('0'), self.extra_product.price) * max(Decimal('0'), self.quantity) if self.extra_product else Decimal('0')
+        menu_cost = max(Decimal('0'), self.menu.price) * self.quantity
+        extra_cost = max(Decimal('0'), self.extra_product.price) * self.quantity if self.extra_product else Decimal('0')
         return menu_cost + extra_cost
