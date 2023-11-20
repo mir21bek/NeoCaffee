@@ -14,7 +14,7 @@ class Category(models.Model):
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
-    def str(self):
+    def __str__(self):
         return self.name
 
 
@@ -46,10 +46,15 @@ class Menu(models.Model):
 
 
 class ExtraItem(models.Model):
+    choice_category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='extra_products', null=True)
     name = models.CharField(max_length=100, verbose_name='Название доп. продукта')
     price = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Цена')
 
     class Meta:
+        ordering = ['name']
+        indexes = [
+            models.Index(fields=['name'])
+        ]
         verbose_name_plural = 'Доп. Продукты'
 
     def __str__(self):
