@@ -54,14 +54,3 @@ class ExtraItem(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class ExtraProduct(models.Model):
-    menu = models.ForeignKey(Menu, on_delete=models.CASCADE)
-    extra = models.ForeignKey(ExtraItem, on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name_plural = 'Продукты с доп. продуктами'
-
-    def __str__(self):
-        return f"{self.menu.name} - {self.extra.name}"
