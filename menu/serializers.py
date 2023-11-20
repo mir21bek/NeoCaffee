@@ -21,4 +21,3 @@ class ExtraItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExtraItem
         fields = ('name', 'price')
-
