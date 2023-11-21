@@ -29,7 +29,7 @@ class Order(models.Model):
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE, related_name='order_items')
-    extra_product = models.ForeignKey(ExtraItem, on_delete=models.CASCADE, null=True, related_name='extra_order')
+    extra_product = models.ForeignKey(ExtraItem, on_delete=models.CASCADE, null=True, blank=True, related_name='extra_order')
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
