@@ -11,19 +11,16 @@ class AdminLoginSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'tokens']
+        fields = ["username", "password", "tokens"]
 
     def validate(self, attrs):
-        username = attrs.get('username', '')
-        password = attrs.get('password', '')
+        username = attrs.get("username", "")
+        password = attrs.get("password", "")
 
         user = auth.authenticate(username=username, password=password)
         if not user:
-            raise AuthenticationFailed('Invalid credential, try again')
+            raise AuthenticationFailed("Invalid credential, try again")
         if not user.is_active:
-            raise AuthenticationFailed('Account disabled, contact admin')
+            raise AuthenticationFailed("Account disabled, contact admin")
 
-        return {
-            'username': user.username,
-            'tokens': user.tokens()
-        }
+        return {"username": user.username, "tokens": user.tokens()}

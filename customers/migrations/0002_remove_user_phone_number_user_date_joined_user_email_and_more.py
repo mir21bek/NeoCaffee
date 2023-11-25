@@ -5,70 +5,85 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('customers', '0001_initial'),
+        ("customers", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='user',
-            name='phone_number',
+            model_name="user",
+            name="phone_number",
         ),
         migrations.AddField(
-            model_name='user',
-            name='date_joined',
-            field=models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined'),
+            model_name="user",
+            name="date_joined",
+            field=models.DateTimeField(
+                default=django.utils.timezone.now, verbose_name="date joined"
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='email',
-            field=models.EmailField(blank=True, max_length=254, verbose_name='email address'),
+            model_name="user",
+            name="email",
+            field=models.EmailField(
+                blank=True, max_length=254, verbose_name="email address"
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='first_name',
-            field=models.CharField(blank=True, max_length=150, verbose_name='first name'),
+            model_name="user",
+            name="first_name",
+            field=models.CharField(
+                blank=True, max_length=150, verbose_name="first name"
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='last_name',
-            field=models.CharField(blank=True, max_length=150, verbose_name='last name'),
+            model_name="user",
+            name="last_name",
+            field=models.CharField(
+                blank=True, max_length=150, verbose_name="last name"
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='username',
+            model_name="user",
+            name="username",
             field=models.CharField(default=1, max_length=20, unique=True),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='user',
-            name='created_at',
+            model_name="user",
+            name="created_at",
             field=models.DateTimeField(auto_now_add=True, null=True),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='date_of_birth',
+            model_name="user",
+            name="date_of_birth",
             field=models.DateField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='is_active',
-            field=models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.', verbose_name='active'),
+            model_name="user",
+            name="is_active",
+            field=models.BooleanField(
+                default=True,
+                help_text="Designates whether this user should be treated as active. Unselect this instead of deleting accounts.",
+                verbose_name="active",
+            ),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='is_staff',
-            field=models.BooleanField(default=False, help_text='Designates whether the user can log into this admin site.', verbose_name='staff status'),
+            model_name="user",
+            name="is_staff",
+            field=models.BooleanField(
+                default=False,
+                help_text="Designates whether the user can log into this admin site.",
+                verbose_name="staff status",
+            ),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='name',
+            model_name="user",
+            name="name",
             field=models.CharField(blank=True, max_length=255),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='otp',
+            model_name="user",
+            name="otp",
             field=models.PositiveIntegerField(blank=True, null=True),
         ),
     ]

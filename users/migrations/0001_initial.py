@@ -4,33 +4,64 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='StaffUser',
+            name="StaffUser",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('password', models.CharField(max_length=128, verbose_name='password')),
-                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
-                ('login', models.CharField(max_length=150, unique=True, verbose_name='Логин')),
-                ('name', models.CharField(max_length=150, verbose_name='Имя')),
-                ('surname', models.CharField(max_length=150, verbose_name='Фамилия')),
-                ('phone_number', models.IntegerField(verbose_name='Номер телефона')),
-                ('image', models.ImageField(upload_to='media/staff_images', verbose_name='Фото')),
-                ('birth_date', models.DateField(verbose_name='Дата рождения')),
-                ('residential_address', models.CharField(max_length=255, verbose_name='Адрес проживвание')),
-                ('home_number', models.CharField(max_length=150, verbose_name='Номер дома')),
-                ('password_image', models.ImageField(upload_to='media/staff_password_image', verbose_name='Фото паспорта')),
-                ('work_schedule', models.DateField(verbose_name='График работы')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("password", models.CharField(max_length=128, verbose_name="password")),
+                (
+                    "last_login",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="last login"
+                    ),
+                ),
+                (
+                    "login",
+                    models.CharField(max_length=150, unique=True, verbose_name="Логин"),
+                ),
+                ("name", models.CharField(max_length=150, verbose_name="Имя")),
+                ("surname", models.CharField(max_length=150, verbose_name="Фамилия")),
+                ("phone_number", models.IntegerField(verbose_name="Номер телефона")),
+                (
+                    "image",
+                    models.ImageField(
+                        upload_to="media/staff_images", verbose_name="Фото"
+                    ),
+                ),
+                ("birth_date", models.DateField(verbose_name="Дата рождения")),
+                (
+                    "residential_address",
+                    models.CharField(max_length=255, verbose_name="Адрес проживвание"),
+                ),
+                (
+                    "home_number",
+                    models.CharField(max_length=150, verbose_name="Номер дома"),
+                ),
+                (
+                    "password_image",
+                    models.ImageField(
+                        upload_to="media/staff_password_image",
+                        verbose_name="Фото паспорта",
+                    ),
+                ),
+                ("work_schedule", models.DateField(verbose_name="График работы")),
             ],
             options={
-                'verbose_name': 'Сотрудник',
-                'verbose_name_plural': 'Сотрудники',
+                "verbose_name": "Сотрудник",
+                "verbose_name_plural": "Сотрудники",
             },
         ),
     ]

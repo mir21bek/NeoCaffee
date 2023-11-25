@@ -13,7 +13,7 @@ class OrderExtraItemSerializer(serializers.ModelSerializer):
 class MenuItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Menu
-        fields = ('name', 'price')
+        fields = ("name", "price")
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -22,7 +22,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderItem
-        fields = ('id', 'menu', 'extra_product', 'quantity')
+        fields = ("id", "menu", "extra_product", "quantity")
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -30,4 +30,4 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('id', 'user', 'items', 'created', 'updated', 'paid')
+        fields = ("id", "user", "items", "created", "updated", "paid")

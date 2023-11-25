@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('menu', '0005_alter_extraitem_options_extraitem_choice_category_and_more'),
+        ("menu", "0005_alter_extraitem_options_extraitem_choice_category_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='category',
-            name='image',
-            field=models.ImageField(blank=True, null=True, upload_to='media/category_images', verbose_name='Фото категории'),
+            model_name="category",
+            name="image",
+            field=models.ImageField(
+                blank=True,
+                null=True,
+                upload_to="media/category_images",
+                verbose_name="Фото категории",
+            ),
         ),
     ]

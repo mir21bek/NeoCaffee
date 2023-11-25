@@ -5,16 +5,21 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('menu', '0006_alter_category_image'),
-        ('order', '0002_alter_orderitem_extra_product'),
+        ("menu", "0006_alter_category_image"),
+        ("order", "0002_alter_orderitem_extra_product"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='orderitem',
-            name='extra_product',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='extra_order', to='menu.extraitem'),
+            model_name="orderitem",
+            name="extra_product",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="extra_order",
+                to="menu.extraitem",
+            ),
         ),
     ]

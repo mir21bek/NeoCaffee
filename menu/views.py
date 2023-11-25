@@ -11,6 +11,7 @@ class CategoryApiView(generics.ListAPIView):
 
     Это представление позволяет только чтение (GET) и требует аутентификации пользователя.
     """
+
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -22,6 +23,7 @@ class CategoryCreateApiView(viewsets.ModelViewSet):
     Это представление позволяет создавать (POST), обновлять (PUT, PATCH), удалять (DELETE) и
     получать (GET) объекты категорий. Требует прав администратора для выполнения операций изменения.
     """
+
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAdminUser]
@@ -37,13 +39,14 @@ class MenuListApiView(generics.ListAPIView):
 
     Это представление позволяет только чтение (GET) и требует аутентификации пользователя.
     """
+
     queryset = Menu.objects.all().filter(available=True)
     serializer_class = MenuSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         queryset = Menu.objects.filter(available=True)
-        category_slug = self.kwargs.get('category_slug')
+        category_slug = self.kwargs.get("category_slug")
         if category_slug:
             category = get_object_or_404(Category, slug=category_slug)
             queryset = queryset.filter(category=category)
@@ -63,6 +66,7 @@ class MenuCreateUpdateApiView(viewsets.ModelViewSet):
     Это представление позволяет создавать (POST), обновлять (PUT, PATCH), удалять (DELETE) и
     получать (GET) объекты блюд. Требует прав администратора для выполнения операций изменения.
     """
+
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
     permission_classes = [permissions.IsAdminUser]
@@ -75,9 +79,10 @@ class MenuCreateUpdateApiView(viewsets.ModelViewSet):
 
 class ExtraItemViewSet(viewsets.ModelViewSet):
     """Представление для создания, обновления, удаления и получения доп. продуктов
-        Это представление позволяет создавать (POST), обновлять (PUT, PATCH), удалять (DELETE) и
-        получать (GET) объекты категорий. Требует прав администратора для выполнения операций изменения.
+    Это представление позволяет создавать (POST), обновлять (PUT, PATCH), удалять (DELETE) и
+    получать (GET) объекты категорий. Требует прав администратора для выполнения операций изменения.
     """
+
     queryset = ExtraItem.objects.all()
     serializer_class = ExtraItemSerializer
     permission_classes = [permissions.IsAdminUser]

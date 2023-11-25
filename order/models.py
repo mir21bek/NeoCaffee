@@ -6,15 +6,15 @@ from menu.models import Menu, ExtraItem
 
 
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     paid = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['-created']
+        ordering = ["-created"]
         indexes = [
-            models.Index(fields=['-created']),
+            models.Index(fields=["-created"]),
         ]
 
     def __str__(self):
@@ -25,17 +25,43 @@ class Order(models.Model):
         total_cost = sum(item.get_cost() for item in order_items)
         return total_cost
 
+    NEW = "Новый"
+    IN_PROCESS = "В процессе"
+    DONE = "Готово"
+    CANCELLED = "Отменено"
+    COMPLETED = "Завершено"
+
+    StatusChoice = [
+        (NEW, "Новый"),
+        (IN_PROCESS, "В процессе"),
+        (DONE, "Готово"),
+        (CANCELLED, "Отменено"),
+        (COMPLETED, "Завершено"),
+    ]
+
+    status = models.CharField(max_length=20, choices=StatusChoice, default=NEW)
+
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
-    menu = models.ForeignKey(Menu, on_delete=models.CASCADE, related_name='order_items')
-    extra_product = models.ForeignKey(ExtraItem, on_delete=models.CASCADE, null=True, blank=True, related_name='extra_order')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
+    menu = models.ForeignKey(Menu, on_delete=models.CASCADE, related_name="order_items")
+    extra_product = models.ForeignKey(
+        ExtraItem,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="extra_order",
+    )
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return str(self.id)
 
     def get_cost(self):
-        menu_cost = max(Decimal('0'), self.menu.price) * self.quantity
-        extra_cost = max(Decimal('0'), self.extra_product.price) * self.quantity if self.extra_product else Decimal('0')
+        menu_cost = max(Decimal("0"), self.menu.price) * self.quantity
+        extra_cost = (
+            max(Decimal("0"), self.extra_product.price) * self.quantity
+            if self.extra_product
+            else Decimal("0")
+        )
         return menu_cost + extra_cost

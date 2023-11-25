@@ -4,11 +4,11 @@ from .models import Order, OrderItem
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
-    raw_id_fields = ['menu']
+    raw_id_fields = ["menu"]
 
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('user', 'created', 'updated', 'paid')
-    list_filter = ('created', 'updated', 'paid')
+    list_display = ("user", "created", "updated", "paid")
+    list_filter = ("created", "updated", "paid")
     inlines = [OrderItemInline]

@@ -5,38 +5,50 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0003_alter_staffusersprofile_options_and_more'),
+        ("users", "0003_alter_staffusersprofile_options_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='staffposition',
-            name='user',
+            model_name="staffposition",
+            name="user",
         ),
         migrations.RemoveField(
-            model_name='staffusersprofile',
-            name='is_admin_user',
+            model_name="staffusersprofile",
+            name="is_admin_user",
         ),
         migrations.AddField(
-            model_name='staffuser',
-            name='phone_number',
-            field=models.CharField(blank=True, max_length=17, validators=[django.core.validators.RegexValidator(message="Номер телефона должен быть в формате: '+999999999'.", regex='^\\+?1?\\d(9,15)$')]),
+            model_name="staffuser",
+            name="phone_number",
+            field=models.CharField(
+                blank=True,
+                max_length=17,
+                validators=[
+                    django.core.validators.RegexValidator(
+                        message="Номер телефона должен быть в формате: '+999999999'.",
+                        regex="^\\+?1?\\d(9,15)$",
+                    )
+                ],
+            ),
         ),
         migrations.AddField(
-            model_name='staffusersprofile',
-            name='positions',
-            field=models.ManyToManyField(related_name='profiles', to='users.staffposition', verbose_name='Должности'),
+            model_name="staffusersprofile",
+            name="positions",
+            field=models.ManyToManyField(
+                related_name="profiles",
+                to="users.staffposition",
+                verbose_name="Должности",
+            ),
         ),
         migrations.AlterField(
-            model_name='staffuser',
-            name='email',
+            model_name="staffuser",
+            name="email",
             field=models.EmailField(max_length=254, unique=True),
         ),
         migrations.AlterField(
-            model_name='staffuser',
-            name='is_active',
-            field=models.BooleanField(default=False, verbose_name='Активен'),
+            model_name="staffuser",
+            name="is_active",
+            field=models.BooleanField(default=False, verbose_name="Активен"),
         ),
     ]

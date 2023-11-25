@@ -5,41 +5,52 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('menu', '0002_extraitem_choice_category'),
+        ("menu", "0002_extraitem_choice_category"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ExtraProduct',
+            name="ExtraProduct",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Продукты с доп. продуктами',
+                "verbose_name_plural": "Продукты с доп. продуктами",
             },
         ),
         migrations.AlterModelOptions(
-            name='extraitem',
-            options={'verbose_name_plural': 'Доп. Продукты'},
+            name="extraitem",
+            options={"verbose_name_plural": "Доп. Продукты"},
         ),
         migrations.RemoveIndex(
-            model_name='extraitem',
-            name='menu_extrai_name_315e3d_idx',
+            model_name="extraitem",
+            name="menu_extrai_name_315e3d_idx",
         ),
         migrations.RemoveField(
-            model_name='extraitem',
-            name='choice_category',
+            model_name="extraitem",
+            name="choice_category",
         ),
         migrations.AddField(
-            model_name='extraproduct',
-            name='extra',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='menu.extraitem'),
+            model_name="extraproduct",
+            name="extra",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="menu.extraitem"
+            ),
         ),
         migrations.AddField(
-            model_name='extraproduct',
-            name='menu',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='menu.menu'),
+            model_name="extraproduct",
+            name="menu",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="menu.menu"
+            ),
         ),
     ]

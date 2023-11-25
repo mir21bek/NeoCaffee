@@ -4,34 +4,37 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0002_staffposition_alter_staffuser_managers_and_more'),
+        ("users", "0002_staffposition_alter_staffuser_managers_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='staffusersprofile',
-            options={'ordering': ['name'], 'verbose_name': 'Профиль Сотрудника', 'verbose_name_plural': 'Профиль Сотрудников'},
+            name="staffusersprofile",
+            options={
+                "ordering": ["name"],
+                "verbose_name": "Профиль Сотрудника",
+                "verbose_name_plural": "Профиль Сотрудников",
+            },
         ),
         migrations.AddField(
-            model_name='staffusersprofile',
-            name='created_at',
+            model_name="staffusersprofile",
+            name="created_at",
             field=models.DateTimeField(auto_now_add=True, null=True),
         ),
         migrations.AddField(
-            model_name='staffusersprofile',
-            name='is_verified',
+            model_name="staffusersprofile",
+            name="is_verified",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='staffusersprofile',
-            name='otp',
+            model_name="staffusersprofile",
+            name="otp",
             field=models.PositiveIntegerField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='staffusersprofile',
-            name='updated_at',
+            model_name="staffusersprofile",
+            name="updated_at",
             field=models.DateTimeField(auto_now=True),
         ),
     ]

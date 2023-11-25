@@ -5,23 +5,27 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('menu', '0004_delete_extraproduct'),
+        ("menu", "0004_delete_extraproduct"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='extraitem',
-            options={'ordering': ['name'], 'verbose_name_plural': 'Доп. Продукты'},
+            name="extraitem",
+            options={"ordering": ["name"], "verbose_name_plural": "Доп. Продукты"},
         ),
         migrations.AddField(
-            model_name='extraitem',
-            name='choice_category',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='extra_products', to='menu.category'),
+            model_name="extraitem",
+            name="choice_category",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="extra_products",
+                to="menu.category",
+            ),
         ),
         migrations.AddIndex(
-            model_name='extraitem',
-            index=models.Index(fields=['name'], name='menu_extrai_name_315e3d_idx'),
+            model_name="extraitem",
+            index=models.Index(fields=["name"], name="menu_extrai_name_315e3d_idx"),
         ),
     ]
