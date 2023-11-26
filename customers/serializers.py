@@ -1,64 +1,73 @@
+# serializers.py
+
 from rest_framework import serializers
-from .models import User
-from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+from allauth.account.adapter import get_adapter
+from allauth.account.utils import setup_user_email
+from allauth.account.models import EmailAddress
+from .models import BaseUser, WaiterUser, BaristaUser, StaffUserProfile
 
 
-class RegistrationSerializer(serializers.ModelSerializer):
-    phone_number = serializers.CharField(source="username", required=True)
-    date_of_birth = serializers.DateField(format="%d-%m-%Y")
+class BaseUserUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BaseUser  # Замените на нужную модель (WaiterUser, BaristaUser, ...)
+        fields = [
+            "id",
+            "full_name",
+            "phone_number",
+            "otp",
+            "date_of_birth",
+            "is_active",
+        ]
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    user = BaseUserUserSerializer()
 
     class Meta:
-        model = User
-        fields = ["name", "phone_number", "date_of_birth"]
+        model = StaffUserProfile
+        fields = [
+            "id",
+            "user",
+            "role",
+            "login",
+            "full_name",
+            "phone_number",
+            "date_of_birth",
+            "schedule",
+            "is_active",
+        ]
 
-    def save(self):
-        user = User(
-            name=self.validated_data["name"],
-            username=self.validated_data["username"],
-            date_of_birth=self.validated_data["date_of_birth"],
+
+class PhoneNumberVerificationSerializer(serializers.Serializer):
+    phone_number = serializers.CharField()
+
+
+class PhoneNumberVerificationCodeSerializer(serializers.Serializer):
+    phone_number = serializers.CharField()
+    code = serializers.CharField()
+
+
+class RegisterSerializer(serializers.Serializer):
+    full_name = serializers.CharField(max_length=50)
+    phone_number = serializers.CharField(max_length=17)
+    otp = serializers.CharField(max_length=4)
+    date_of_birth = serializers.DateField()
+
+    def create(self, validated_data):
+        # Создаем пользователя через allauth
+        user = get_adapter().create_user(self.context["request"], validated_data)
+        setup_user_email(self.context["request"], user, [])
+        EmailAddress.objects.create(
+            user=user, email=user.phone_number, primary=True, verified=True
         )
-        user.save()
         return user
 
 
-class CheckOPTSerializer(serializers.ModelSerializer):
-    otp = serializers.IntegerField()
+class WaiterBaristaRegisterSerializer(serializers.Serializer):
+    login = serializers.CharField(max_length=50)
+    otp = serializers.CharField(max_length=4)
 
-    class Meta:
-        model = User
-        fields = ["otp"]
-
-
-class LoginSerializer(serializers.ModelSerializer):
-    phone_number = serializers.CharField(
-        source="username", required=True, max_length=15
-    )
-
-    class Meta:
-        model = User
-        fields = ["phone_number"]
-
-
-class ProfileSerializer(serializers.ModelSerializer):
-    phone_number = serializers.CharField(source="username", read_only=True)
-
-    class Meta:
-        model = User
-        fields = ["id", "name", "phone_number", "date_of_birth"]
-
-
-class LogoutSerializer(serializers.Serializer):
-    refresh = serializers.CharField()
-
-    default_error_messages = {"bad_token": "Token is expired or invalid"}
-
-    def validate(self, attrs):
-        self.token = attrs["refresh"]
-        return attrs
-
-    def save(self, **kwargs):
-        try:
-            RefreshToken(self.token).blacklist()
-
-        except TokenError:
-            self.fail("bad_token")
+    def create(self, validated_data):
+        # Создайте WaiterUser или BaristaUser в зависимости от вашего выбора
+        user = get_adapter().create_user(self.context["request"], validated_data)
+        return user

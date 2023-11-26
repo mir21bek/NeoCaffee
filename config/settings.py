@@ -26,7 +26,7 @@ ALLOWED_HOSTS = [
     "www.ishak-backender.org.kg",
 ]
 
-AUTH_USER_MODEL = "customers.User"
+AUTH_USER_MODEL = "customers.BaseUser"
 
 # Application definition
 
@@ -41,17 +41,20 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "drf_yasg",
     "corsheaders",
-    "users.apps.UsersConfig",
     "menu.apps.MenuConfig",
     "branches.apps.BranchesConfig",
     "customers.apps.CustomersConfig",
     "order.apps.OrderConfig",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -163,6 +166,16 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
     "SLIDING_TOKEN_LIFETIME": timedelta(days=30),
 }
+
+
+ACCOUNT_EMAIL_VERIFICATION = (
+    "none"  # Отключаем верификацию по email, так как используем телефон
+)
+ACCOUNT_AUTHENTICATION_METHOD = "phone"  # Указываем метод аутентификации по телефону
+ACCOUNT_PHONE_VERIFICATION = (
+    "twilio"  # Указываем метод верификации телефона через Twilio
+)
+
 
 TWILIO_ACCOUNT_SID = config("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = config("TWILIO_AUTH_TOKEN")

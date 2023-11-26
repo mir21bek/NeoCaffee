@@ -1,135 +1,88 @@
-from rest_framework.views import APIView
+# views.py
+from allauth.account.utils import setup_user_email
+from rest_framework import status
 from rest_framework.response import Response
-from rest_framework import status, generics, exceptions
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.tokens import RefreshToken
-from drf_yasg.utils import swagger_auto_schema
-from .utils import generate_otp, send_otp
-from .models import User
+from rest_framework.views import APIView
+from allauth.account.models import EmailAddress
+from phonenumbers import parse as parse_phone_number
+from twilio.rest import Client
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from .models import StaffUserProfile
 from .serializers import (
-    RegistrationSerializer,
-    LoginSerializer,
-    CheckOPTSerializer,
-    ProfileSerializer,
-    LogoutSerializer,
+    BaseUserUserSerializer,
+    UserProfileSerializer,
+    PhoneNumberVerificationSerializer,
+    PhoneNumberVerificationCodeSerializer,
 )
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny
 
 
-class RegistrationView(generics.GenericAPIView):
-    serializer_class = RegistrationSerializer
-
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-
-        otp = generate_otp()
-        user.otp = otp
-        user.save()
-
-        send_otp(user.username, otp)
-
-        return Response(
-            {"message": "Verification code has been sent to your phone number."},
-            status=status.HTTP_200_OK,
-        )
-
-
-class CheckOTPView(generics.GenericAPIView):
-    serializer_class = CheckOPTSerializer
-
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        otp = serializer.validated_data["otp"]
-        user = User.objects.filter(otp=otp, is_verified=False).first()
-
-        if not user:
-            raise exceptions.APIException("Code is incorrect!")
-
-        if not user.is_verified:
-            user.is_verified = True
-            user.otp = None
-            user.save()
-
-            refresh = RefreshToken.for_user(user)
-            return Response(
-                {"refresh": str(refresh), "access": str(refresh.access_token)},
-                status=status.HTTP_200_OK,
-            )
-        else:
-            return Response(
-                {"message": "User is already verified."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-
-class LoginView(APIView):
-    serializer_class = LoginSerializer
-
-    @swagger_auto_schema(
-        request_body=LoginSerializer,
-        responses={200: "OK", 404: "Not Found"},
-    )
-    def post(self, request):
-        username = request.data.get("phone_number", "")
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            return Response(
-                {"error": "User with this phone number does not exist."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        if user.otp:
-            user.otp = None
-            user.save()
-
-        otp = generate_otp()
-        user.otp = otp
-        user.save()
-
-        send_otp(username, otp)
-
-        return Response(
-            {"message": "One-time password has been sent to your phone number."},
-            status=status.HTTP_200_OK,
-        )
-
-
-class LoginCheckOTPView(generics.GenericAPIView):
-    serializer_class = CheckOPTSerializer
-
+class RegisterView(APIView):
+    @permission_classes([AllowAny])
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = BaseUserUserSerializer(data=request.data)
         if serializer.is_valid():
-            otp = serializer.validated_data["otp"]
-            user = User.objects.filter(otp=otp).first()
-            if user:
-                refresh = RefreshToken.for_user(user)
-                return Response(
-                    {"refresh": str(refresh), "access": str(refresh.access_token)}
-                )
+            user = serializer.save()
+            setup_user_email(request, user, [])
+            EmailAddress.objects.create(
+                user=user, email=user.phone_number, primary=True, verified=True
+            )
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PhoneNumberVerificationView(APIView):
+    @permission_classes([AllowAny])
+    def post(self, request, *args, **kwargs):
+        serializer = PhoneNumberVerificationSerializer(data=request.data)
+        if serializer.is_valid():
+            phone_number = parse_phone_number(
+                serializer.validated_data["phone_number"], "KG"
+            )
+            # Отправка кода для верификации через Twilio
+            client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+            verification = client.verify.services(
+                settings.TWILIO_SERVER_SID
+            ).verifications.create(
+                to=f"+{phone_number.country_code}{phone_number.national_number}",
+                channel="sms",
+            )
+            return Response({"detail": "Verification code sent successfully."})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PhoneNumberVerificationCodeView(APIView):
+    @permission_classes([AllowAny])
+    def post(self, request, *args, **kwargs):
+        serializer = PhoneNumberVerificationCodeSerializer(data=request.data)
+        if serializer.is_valid():
+            phone_number = parse_phone_number(
+                serializer.validated_data["phone_number"], "KG"
+            )
+            # Проверка верификации через Twilio
+            client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+            verification_check = client.verify.services(
+                settings.TWILIO_SERVER_SID
+            ).verification_checks.create(
+                to=f"+{phone_number.country_code}{phone_number.national_number}",
+                code=serializer.validated_data["code"],
+            )
+            if verification_check.status == "approved":
+                user = get_user_model().objects.get(phone_number=phone_number)
+                user.is_active = True
+                user.save()
+                return Response({"detail": "Phone number verified successfully."})
             return Response(
-                {"detail": "Invalid OTP."}, status=status.HTTP_400_BAD_REQUEST
+                {"detail": "Invalid verification code."},
+                status=status.HTTP_400_BAD_REQUEST,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ProfileView(generics.RetrieveAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = ProfileSerializer
-    queryset = User.objects.all()
-
-    def get_object(self):
-        return self.request.user
-
-
-class LogoutView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = LogoutSerializer
-
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
+class UserProfileView(APIView):
+    def get(self, request, *args, **kwargs):
+        user_profile = StaffUserProfile.objects.get(user=request.user)
+        serializer = UserProfileSerializer(user_profile)
+        return Response(serializer.data)

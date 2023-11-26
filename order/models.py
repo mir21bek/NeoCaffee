@@ -1,15 +1,20 @@
 from decimal import Decimal
 
 from django.db import models
-from customers.models import User
+from django.conf import settings
 from menu.models import Menu, ExtraItem
 
 
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True
+    )
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     paid = models.BooleanField(default=False)
+
+    def paid_order(self):
+        return all(item.paid for item in self.items.all())
 
     class Meta:
         ordering = ["-created"]
@@ -40,6 +45,28 @@ class Order(models.Model):
     ]
 
     status = models.CharField(max_length=20, choices=StatusChoice, default=NEW)
+
+    def accept_order(self):
+        if self.status == self.NEW:
+            for item in self.items:
+                if not item.menu.available:
+                    raise ValueError("Некоторые продукты в заказе не в наличии. ")
+                self.status = self.IN_PROCESS
+                self.save()
+
+    def mark_as_done(self):
+        if self.status == self.IN_PROCESS:
+            self.status = self.DONE
+            self.save()
+
+    def completed_order(self):
+        if self.paid_order():
+            self.status = self.COMPLETED
+            self.save()
+
+    def cancelled_order(self):
+        self.status = self.CANCELLED
+        self.save()
 
 
 class OrderItem(models.Model):
