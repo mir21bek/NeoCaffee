@@ -1,88 +1,84 @@
-# views.py
-from allauth.account.utils import setup_user_email
-from rest_framework import status
+from rest_framework import generics, exceptions, status
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from allauth.account.models import EmailAddress
-from phonenumbers import parse as parse_phone_number
-from twilio.rest import Client
-from django.conf import settings
-from django.contrib.auth import get_user_model
-from .models import StaffUserProfile
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.core.exceptions import ObjectDoesNotExist
+
+from .models import CustomerUser
 from .serializers import (
-    BaseUserUserSerializer,
-    UserProfileSerializer,
-    PhoneNumberVerificationSerializer,
-    PhoneNumberVerificationCodeSerializer,
+    RegistrationSerializer,
+    CheckOPTSerializer,
+    CustomerLoginSerializer,
 )
-from rest_framework.decorators import permission_classes
-from rest_framework.permissions import AllowAny
+from .utils import generate_otp, send_otp
 
 
-class RegisterView(APIView):
-    @permission_classes([AllowAny])
-    def post(self, request, *args, **kwargs):
-        serializer = BaseUserUserSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            setup_user_email(request, user, [])
-            EmailAddress.objects.create(
-                user=user, email=user.phone_number, primary=True, verified=True
-            )
-            return Response(status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class CustomerRegistrationView(generics.GenericAPIView):
+    serializer_class = RegistrationSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        otp = generate_otp()
+        user.otp = otp
+        user.save()
+
+        send_otp(user.phone_number, otp)
+
+        return Response(
+            {"message": "Verification code has been sent to your phone number."},
+            status=status.HTTP_200_OK,
+        )
 
 
-class PhoneNumberVerificationView(APIView):
-    @permission_classes([AllowAny])
-    def post(self, request, *args, **kwargs):
-        serializer = PhoneNumberVerificationSerializer(data=request.data)
-        if serializer.is_valid():
-            phone_number = parse_phone_number(
-                serializer.validated_data["phone_number"], "KG"
-            )
-            # Отправка кода для верификации через Twilio
-            client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
-            verification = client.verify.services(
-                settings.TWILIO_SERVER_SID
-            ).verifications.create(
-                to=f"+{phone_number.country_code}{phone_number.national_number}",
-                channel="sms",
-            )
-            return Response({"detail": "Verification code sent successfully."})
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class CheckOTPView(generics.GenericAPIView):
+    serializer_class = CheckOPTSerializer
 
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-class PhoneNumberVerificationCodeView(APIView):
-    @permission_classes([AllowAny])
-    def post(self, request, *args, **kwargs):
-        serializer = PhoneNumberVerificationCodeSerializer(data=request.data)
-        if serializer.is_valid():
-            phone_number = parse_phone_number(
-                serializer.validated_data["phone_number"], "KG"
-            )
-            # Проверка верификации через Twilio
-            client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
-            verification_check = client.verify.services(
-                settings.TWILIO_SERVER_SID
-            ).verification_checks.create(
-                to=f"+{phone_number.country_code}{phone_number.national_number}",
-                code=serializer.validated_data["code"],
-            )
-            if verification_check.status == "approved":
-                user = get_user_model().objects.get(phone_number=phone_number)
-                user.is_active = True
-                user.save()
-                return Response({"detail": "Phone number verified successfully."})
+        otp = serializer.validated_data["otp"]
+        user = CustomerUser.objects.filter(otp=otp, is_active=False).first()
+
+        if not user:
+            raise exceptions.APIException("Code is incorrect!")
+
+        if not user.is_active:
+            user.is_active = True
+            user.otp = None
+            user.save()
+
+            refresh = RefreshToken.for_user(user)
             return Response(
-                {"detail": "Invalid verification code."},
+                {"refresh": str(refresh), "access": str(refresh.access_token)},
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {"message": "User is already verified."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserProfileView(APIView):
-    def get(self, request, *args, **kwargs):
-        user_profile = StaffUserProfile.objects.get(user=request.user)
-        serializer = UserProfileSerializer(user_profile)
-        return Response(serializer.data)
+class CustomerLoginView(generics.GenericAPIView):
+    serializer_class = CustomerLoginSerializer
+
+    def post(self, request):
+        phone_number = request.data.get("phone_number")
+
+        try:
+            user = CustomerUser.objects.get(phone_number=phone_number)
+
+            refresh = RefreshToken.for_user(user)
+            return Response(
+                {"refresh": str(refresh), "access": str(refresh.access_token)},
+                status=status.HTTP_200_OK,
+            )
+
+        except ObjectDoesNotExist:
+            return Response(
+                {"error": "User with this phone number does not exist. "},
+                status=status.HTTP_404_NOT_FOUND,
+            )

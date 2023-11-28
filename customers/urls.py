@@ -1,20 +1,20 @@
 from django.urls import path
-from .views import (
-    RegisterView,
-    PhoneNumberVerificationCodeView,
-    PhoneNumberVerificationView,
-)
+from .views import CustomerRegistrationView, CheckOTPView, CustomerLoginView
 
 urlpatterns = [
-    path("register/", RegisterView.as_view(), name="register"),
     path(
-        "send-verification-code/",
-        PhoneNumberVerificationView.as_view(),
-        name="send-code",
+        "customers/register/",
+        CustomerRegistrationView.as_view(),
+        name="customers-register",
     ),
     path(
         "check-verification-code/",
-        PhoneNumberVerificationCodeView.as_view(),
+        CheckOTPView.as_view(),
         name="check-code",
+    ),
+    path(
+        "customer/login/",
+        CustomerLoginView.as_view(),
+        name="customer-login",
     ),
 ]
