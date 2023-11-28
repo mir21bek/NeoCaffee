@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import CustomerUser
+from .models import BaseUser
 from .serializers import (
     RegistrationSerializer,
     CheckOPTSerializer,
@@ -40,7 +40,7 @@ class CheckOTPView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         otp = serializer.validated_data["otp"]
-        user = CustomerUser.objects.filter(otp=otp, is_active=False).first()
+        user = BaseUser.objects.filter(otp=otp, is_active=False).first()
 
         if not user:
             raise exceptions.APIException("Code is incorrect!")
@@ -69,7 +69,7 @@ class CustomerLoginView(generics.GenericAPIView):
         phone_number = request.data.get("phone_number")
 
         try:
-            user = CustomerUser.objects.get(phone_number=phone_number)
+            user = BaseUser.objects.get(phone_number=phone_number)
 
             refresh = RefreshToken.for_user(user)
             return Response(

@@ -2,71 +2,34 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from order.models import OrderItem
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    PermissionsMixin,
-    BaseUserManager,
-    AbstractUser,
-)
+from .managers import UserManager
 from .services import validate_phone_number
+from django.contrib.auth.models import AbstractUser
 
 
-class BaseManager(BaseUserManager):
-    def create_user(self, phone_number, password=None, **extra_fields):
-        phone_number = validate_phone_number(phone_number)
-        user = self.model(phone_number=phone_number, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, phone_number, password=None, **extra_fields):
-        extra_fields.setdefault("is_staff", True)
-        extra_fields.setdefault("is_superuser", True)
-        return self.create_user(phone_number, password, **extra_fields)
-
-
-class BaseUser(AbstractBaseUser, PermissionsMixin):
+class BaseUser(AbstractUser):
+    username = None
     phone_number = models.CharField(
-        validators=[validate_phone_number],
-        max_length=17,
-        unique=True,
+        validators=[validate_phone_number], max_length=17, unique=True
     )
-    is_active = models.BooleanField(default=False)
-    is_staff = models.BooleanField(default=False)
-
-    objects = BaseManager()
+    date_of_birth = models.DateField(null=True, blank=True)
+    is_active = False
+    otp = models.CharField(max_length=4)
 
     USERNAME_FIELD = "phone_number"
     REQUIRED_FIELDS = []
+
+    objects = UserManager()
 
     def __str__(self):
         return self.phone_number
 
 
-class CustomerUser(BaseUser):
-    full_name = models.CharField(max_length=50)
-    otp = models.PositiveIntegerField(null=True, blank=True)
-    date_of_birth = models.DateField()
-
-    def __str__(self):
-        return self.full_name
-
-
 class WaiterUser(BaseUser):
     login = models.CharField(max_length=50, null=True, unique=True)
-    otp = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.login
-
-
-class BaristaUser(BaseUser):
-    full_name = models.CharField(max_length=50)
-    otp = models.PositiveIntegerField(null=True, blank=True)
-    date_of_birth = models.DateField()
-
-    def __str__(self):
-        return self.full_name
 
 
 class Role(models.Model):
@@ -109,7 +72,7 @@ class StaffUserProfile(models.Model):
 
 class CustomerProfile(models.Model):
     user = models.OneToOneField(
-        CustomerUser, on_delete=models.CASCADE, related_name="customer_profile"
+        BaseUser, on_delete=models.CASCADE, related_name="customer_profile"
     )
     orders = models.ManyToManyField(OrderItem, related_name="customer_orders")
     full_name = models.CharField(max_length=100)
