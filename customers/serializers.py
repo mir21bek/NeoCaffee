@@ -1,10 +1,7 @@
 # serializers.py
 
 from rest_framework import serializers
-from allauth.account.adapter import get_adapter
-from allauth.account.utils import setup_user_email
-from allauth.account.models import EmailAddress
-from .models import BaseUser, WaiterUser, StaffUserProfile
+from .models import BaristaUser, CustomerUser, WaiterUser
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -12,13 +9,13 @@ class RegistrationSerializer(serializers.ModelSerializer):
     date_of_birth = serializers.DateField(format="%Y-%m-%d")
 
     class Meta:
-        model = BaseUser
-        fields = ["full_name", "phone_number", "date_of_birth"]
+        model = CustomerUser
+        fields = ["username", "phone_number", "date_of_birth"]
 
     def save(self):
         phone_number = self.validated_data["phone_number"]
-        user = BaseUser(
-            full_name=self.validated_data["full_name"],
+        user = CustomerUser(
+            username=self.validated_data["username"],
             phone_number=phone_number,
             date_of_birth=self.validated_data["date_of_birth"],
         )
@@ -30,13 +27,38 @@ class CustomerLoginSerializer(serializers.ModelSerializer):
     phone_number = serializers.CharField(required=True)
 
     class Meta:
-        model = BaseUser
+        model = CustomerUser
         fields = ["phone_number"]
 
 
-class CheckOPTSerializer(serializers.ModelSerializer):
+class CustomerCheckOTPSerializer(serializers.ModelSerializer):
     otp = serializers.IntegerField()
 
     class Meta:
-        model = BaseUser
+        model = CustomerUser
         fields = ["otp"]
+
+
+class WaiterLoginSerializer(serializers.ModelSerializer):
+    login = serializers.CharField(required=True)
+    password = serializers.CharField(required=True, write_only=True)
+
+    class Meta:
+        model = WaiterUser
+        fields = ["login", "password"]
+
+
+class WaiterCheckOTPSerializer(serializers.ModelSerializer):
+    otp = serializers.IntegerField()
+
+    class Meta:
+        model = WaiterUser
+        fields = ["otp"]
+
+
+class BaristaLoginSerializer(serializers.ModelSerializer):
+    phone_number = serializers.CharField(required=True)
+
+    class Meta:
+        model = BaristaUser
+        fields = ["phone_number"]
