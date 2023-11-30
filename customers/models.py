@@ -14,7 +14,7 @@ class BaseUser(AbstractUser):
     )
     date_of_birth = models.DateField(null=True, blank=True)
     otp = models.CharField(max_length=4, null=True, blank=True)
-    is_active = models.BooleanField(default=False)
+    is_verify = models.BooleanField(default=False)
 
     USERNAME_FIELD = "phone_number"
     REQUIRED_FIELDS = []

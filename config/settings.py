@@ -25,6 +25,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "www.ishak-backender.org.kg",
+    "ishak-backender.org.kg",
 ]
 
 AUTH_USER_MODEL = "customers.BaseUser"

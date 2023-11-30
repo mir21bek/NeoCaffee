@@ -18,8 +18,8 @@ class OTPService:
     @staticmethod
     def check_and_activate_user(user, otp):
         if user:
-            if not user.is_active:
-                user.is_active = True
+            if not user.is_verify:
+                user.is_verify = True
                 user.otp = None
                 user.save()
 

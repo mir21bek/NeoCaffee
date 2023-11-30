@@ -67,7 +67,7 @@ class LoginWaiterView(generics.GenericAPIView):
         try:
             user = WaiterUser.objects.get(login=login)
 
-            if not user.is_active:
+            if not user.is_verify:
                 otp_service = OTPService()
                 otp_service.generate_and_send_otp(user)
 
@@ -93,7 +93,7 @@ class CustomerCheckOTPView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         otp = serializer.validated_data["otp"]
-        user = CustomerUser.objects.filter(otp=otp, is_active=False).first()
+        user = CustomerUser.objects.filter(otp=otp, is_verify=False).first()
 
         otp_service = OTPService()
         return otp_service.check_and_activate_user(user, otp)
@@ -107,7 +107,7 @@ class CheckOTPViewForWaiter(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         otp = serializer.validated_data["otp"]
-        user = WaiterUser.objects.filter(otp=otp, is_active=False).first()
+        user = WaiterUser.objects.filter(otp=otp, is_verify=False).first()
 
         otp_service = OTPService()
         return otp_service.check_and_activate_user(user, otp)
@@ -122,7 +122,7 @@ class BaristaLoginView(generics.GenericAPIView):
         try:
             user = BaristaUser.objects.get(phone_number=phone_number)
 
-            if not user.is_active:
+            if not user.is_verify:
                 otp_service = OTPService()
                 otp_service.generate_and_send_otp(user)
 
@@ -146,7 +146,7 @@ class BaristaCheckOTPView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         otp = serializer.validated_data["otp"]
-        user = BaristaUser.objects.filter(otp=otp, is_active=False).first()
+        user = BaristaUser.objects.filter(otp=otp, is_verify=False).first()
 
         otp_service = OTPService()
         return otp_service.check_and_activate_user(user, otp)
