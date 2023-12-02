@@ -21,15 +21,14 @@ class CoffeeShop(models.Model):
         related_name="branches",
         verbose_name="Филиал",
     )
-    category = models.ForeignKey(
+    category = models.ManyToManyField(
         Category,
-        on_delete=models.CASCADE,
         verbose_name="Категория",
         related_name="coffee_shop",
     )
-    menu = models.ForeignKey(
-        Menu, on_delete=models.CASCADE, related_name="menu", verbose_name="Меню"
+    menu = models.ManyToManyField(
+        Menu, related_name="menu", verbose_name="Меню"
     )
 
     def __str__(self):
-        return self.branch
+        return f"{self.branch}"

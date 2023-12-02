@@ -10,6 +10,10 @@ class BranchesSerializer(serializers.ModelSerializer):
 
 
 class CoffeeShopSerializer(serializers.ModelSerializer):
+    branch = serializers.StringRelatedField()
+    category = serializers.StringRelatedField(many=True)
+    menu = serializers.StringRelatedField(many=True)
+
     class Meta:
         model = CoffeeShop
         fields = ("branch", "category", "menu")

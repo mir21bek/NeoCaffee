@@ -3,10 +3,10 @@ from rest_framework import routers
 from .views import *
 
 # Инициализация маршрутизатора для автоматической генерации URL-путей на основе представлений ViewSet
-router = routers.DefaultRouter()
-router.register("create-category", CategoryCreateApiView, basename="create-category")
-router.register("create-menu", MenuCreateUpdateApiView, basename="create-menu")
-router.register("extra-item", ExtraItemViewSet, basename="extra-item")
+# router = routers.DefaultRouter()
+# router.register("create-category", CategoryCreateApiView, basename="create-category")
+# router.register("create-menu", MenuCreateUpdateApiView, basename="create-menu")
+# router.register("extra-item", ExtraItemViewSet, basename="extra-item")
 
 # URL-пути, связанные с обычными представлениями (не ViewSet)
 urlpatterns = [
@@ -16,4 +16,4 @@ urlpatterns = [
 ]
 
 # Добавление URL-путей, сгенерированных маршрутизатором
-urlpatterns += router.urls
+# urlpatterns += router.urls

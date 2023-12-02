@@ -1,3 +1,10 @@
 from django.contrib import admin
+from .models import Branches, CoffeeShop
 
-# Register your models here.
+
+@admin.register(CoffeeShop)
+class BranchesAdmin(admin.ModelAdmin):
+    filter_horizontal = ('category', 'menu')
+
+
+admin.site.register(Branches)
