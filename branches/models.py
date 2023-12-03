@@ -26,9 +26,7 @@ class CoffeeShop(models.Model):
         verbose_name="Категория",
         related_name="coffee_shop",
     )
-    menu = models.ManyToManyField(
-        Menu, related_name="menu", verbose_name="Меню"
-    )
+    menu = models.ManyToManyField(Menu, related_name="menu", verbose_name="Меню")
 
     def __str__(self):
         return f"{self.branch}"

@@ -4,7 +4,7 @@ from .models import Branches, CoffeeShop
 
 @admin.register(CoffeeShop)
 class BranchesAdmin(admin.ModelAdmin):
-    filter_horizontal = ('category', 'menu')
+    filter_horizontal = ("category", "menu")
 
 
 admin.site.register(Branches)

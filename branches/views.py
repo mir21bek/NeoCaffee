@@ -1,59 +1,35 @@
-from rest_framework import viewsets
-from rest_framework import permissions, generics
+from rest_framework import permissions, mixins, generics
 from rest_framework.response import Response
 
-from .models import Branches, CoffeeShop
+from .models import Branches
 from menu.models import Menu, Category
 from menu.serializers import MenuSerializer, CategorySerializer
-from .serializers import BranchesSerializer, CoffeeShopSerializer
+from .serializers import BranchesSerializer
 
 
-class BranchesListAPI(generics.ListAPIView):
+class ListBranchesAPIView(generics.ListAPIView):
     queryset = Branches.objects.all()
     serializer_class = BranchesSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
 
-class BranchesDetailAPIView(generics.ListAPIView):
+class BranchesDetailAPIView(generics.RetrieveAPIView):
     queryset = Branches.objects.all()
     serializer_class = BranchesSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
 
-        menus = Menu.objects.all()
-        menus_serializer = MenuSerializer(menus, many=True)
-        categorys = Category.objects.all()
-        categorys_serializer = CategorySerializer(categorys, many=True)
+        category = instance.branches.values_list("category", flat=True).distinct()
+        category_serializer = CategorySerializer(
+            Category.objects.filter(id__in=category), many=True
+        )
 
-        return Response({
-            'menus': menus_serializer.data,
-            'category': categorys_serializer.data
-        })
+        menus = instance.branches.values_list("menu", flat=True).distinct()
+        menus_serializer = MenuSerializer(Menu.objects.filter(id__in=menus), many=True)
 
-#
-# class BranchesViewSet(viewsets.ModelViewSet):
-#     queryset = Branches.objects.all()
-#     serializer_class = BranchesSerializer
-#     permission_classes = [permissions.IsAdminUser]
-
-
-class CoffeeShopListAPI(generics.ListAPIView):
-    queryset = CoffeeShop.objects.all()
-    serializer_class = CoffeeShopSerializer
-    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
-
-
-# class CoffeeShopViewSet(viewsets.ModelViewSet):
-#     queryset = CoffeeShop.objects.all()
-#     serializer_class = CoffeeShopSerializer
-    # permission_classes = [permissions.IsAdminUser]
-
-    # def get_queryset(self):
-    #     queryset = CoffeeShop.objects.all()
-    #     category_id = self.request.query_params.get("category_id")
-    #     if category_id:
-    #         queryset = queryset.filter(category_id=category_id)
-    #         return queryset
+        return Response(
+            {"menus": menus_serializer.data, "category": category_serializer.data}
+        )

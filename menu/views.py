@@ -71,10 +71,10 @@ class PopularDishesView(generics.ListAPIView):
 #     serializer_class = MenuSerializer
 #     permission_classes = [permissions.IsAdminUser]
 
-    # def perform_create(self, serializer):
-    #     """Метод для создания нового блюда и вызова сигнала после успешного создания."""
-    #     menu_instance = serializer.save()
-    #     post_menu_save(sender=Menu, instance=menu_instance, created=True)
+# def perform_create(self, serializer):
+#     """Метод для создания нового блюда и вызова сигнала после успешного создания."""
+#     menu_instance = serializer.save()
+#     post_menu_save(sender=Menu, instance=menu_instance, created=True)
 
 
 # class ExtraItemViewSet(viewsets.ModelViewSet):
