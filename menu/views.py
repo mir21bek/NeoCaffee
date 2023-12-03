@@ -14,24 +14,24 @@ class CategoryApiView(generics.ListAPIView):
 
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
 
-class CategoryCreateApiView(viewsets.ModelViewSet):
-    """Представление для создания, обновления, удаления и получения категорий.
-
-    Это представление позволяет создавать (POST), обновлять (PUT, PATCH), удалять (DELETE) и
-    получать (GET) объекты категорий. Требует прав администратора для выполнения операций изменения.
-    """
-
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = [permissions.IsAdminUser]
-
-    def perform_create(self, serializer):
-        """Метод для создания новой категории и вызова сигнала после успешного создания."""
-        category_instance = serializer.save()
-        post_category_save(sender=Category, instance=category_instance, created=True)
+# class CategoryCreateApiView(viewsets.ModelViewSet):
+#     """Представление для создания, обновления, удаления и получения категорий.
+#
+#     Это представление позволяет создавать (POST), обновлять (PUT, PATCH), удалять (DELETE) и
+#     получать (GET) объекты категорий. Требует прав администратора для выполнения операций изменения.
+#     """
+#
+#     queryset = Category.objects.all()
+#     serializer_class = CategorySerializer
+#     permission_classes = [permissions.IsAdminUser]
+#
+#     def perform_create(self, serializer):
+#         """Метод для создания новой категории и вызова сигнала после успешного создания."""
+#         category_instance = serializer.save()
+#         post_category_save(sender=Category, instance=category_instance, created=True)
 
 
 class MenuListApiView(generics.ListAPIView):
@@ -42,7 +42,7 @@ class MenuListApiView(generics.ListAPIView):
 
     queryset = Menu.objects.all().filter(available=True)
     serializer_class = MenuSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         queryset = Menu.objects.filter(available=True)
@@ -60,29 +60,29 @@ class PopularDishesView(generics.ListAPIView):
         return Menu.objects.filter(popular=True)[:5]
 
 
-class MenuCreateUpdateApiView(viewsets.ModelViewSet):
-    """Представление для создания, обновления, удаления и получения блюд.
+# class MenuCreateUpdateApiView(viewsets.ModelViewSet):
+#     """Представление для создания, обновления, удаления и получения блюд.
+#
+#     Это представление позволяет создавать (POST), обновлять (PUT, PATCH), удалять (DELETE) и
+#     получать (GET) объекты блюд. Требует прав администратора для выполнения операций изменения.
+#     """
+#
+#     queryset = Menu.objects.all()
+#     serializer_class = MenuSerializer
+#     permission_classes = [permissions.IsAdminUser]
 
-    Это представление позволяет создавать (POST), обновлять (PUT, PATCH), удалять (DELETE) и
-    получать (GET) объекты блюд. Требует прав администратора для выполнения операций изменения.
-    """
-
-    queryset = Menu.objects.all()
-    serializer_class = MenuSerializer
-    permission_classes = [permissions.IsAdminUser]
-
-    def perform_create(self, serializer):
-        """Метод для создания нового блюда и вызова сигнала после успешного создания."""
-        menu_instance = serializer.save()
-        post_menu_save(sender=Menu, instance=menu_instance, created=True)
+# def perform_create(self, serializer):
+#     """Метод для создания нового блюда и вызова сигнала после успешного создания."""
+#     menu_instance = serializer.save()
+#     post_menu_save(sender=Menu, instance=menu_instance, created=True)
 
 
-class ExtraItemViewSet(viewsets.ModelViewSet):
-    """Представление для создания, обновления, удаления и получения доп. продуктов
-    Это представление позволяет создавать (POST), обновлять (PUT, PATCH), удалять (DELETE) и
-    получать (GET) объекты категорий. Требует прав администратора для выполнения операций изменения.
-    """
-
-    queryset = ExtraItem.objects.all()
-    serializer_class = ExtraItemSerializer
-    permission_classes = [permissions.IsAdminUser]
+# class ExtraItemViewSet(viewsets.ModelViewSet):
+#     """Представление для создания, обновления, удаления и получения доп. продуктов
+#     Это представление позволяет создавать (POST), обновлять (PUT, PATCH), удалять (DELETE) и
+#     получать (GET) объекты категорий. Требует прав администратора для выполнения операций изменения.
+#     """
+#
+#     queryset = ExtraItem.objects.all()
+#     serializer_class = ExtraItemSerializer
+#     permission_classes = [permissions.IsAdminUser]
