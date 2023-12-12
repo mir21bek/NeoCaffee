@@ -5,6 +5,10 @@ from .views import (
     CustomerLoginView,
     CustomerProfileView,
 )
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register(r"customer/profile/", CustomerProfileView, basename="customer/profile/")
 
 urlpatterns = [
     path(
@@ -22,25 +26,6 @@ urlpatterns = [
         CustomerLoginView.as_view(),
         name="customer-login",
     ),
-    # path("waiter/login/", LoginWaiterView.as_view(), name="waiter-login"),
-    # path(
-    #     "waiter/check-verification-code/",
-    #     CheckOTPViewForWaiter.as_view(),
-    #     name="check-code-for-waiter",
-    # ),
-    # path(
-    #     "barista/login/",
-    #     BaristaLoginView.as_view(),
-    #     name="barista-login",
-    # ),
-    # path(
-    #     "barista/check-verification-code/",
-    #     BaristaCheckOTPView.as_view(),
-    #     name="check-code-for-barista",
-    # ),
-    path(
-        "customer/profile/",
-        CustomerProfileView.as_view(),
-        name="customer-profile",
-    ),
 ]
+
+urlpatterns += router.urls

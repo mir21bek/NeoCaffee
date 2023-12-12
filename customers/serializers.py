@@ -52,30 +52,3 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
                 setattr(instance, attr, value)
             instance.save()
         return instance
-
-
-#
-#
-# class WaiterLoginSerializer(serializers.ModelSerializer):
-#     login = serializers.CharField(required=True)
-#     password = serializers.CharField(required=True, write_only=True)
-#
-#     class Meta:
-#         model = WaiterUser
-#         fields = ["login", "password"]
-#
-#
-# class WaiterCheckOTPSerializer(serializers.ModelSerializer):
-#     otp = serializers.IntegerField()
-#
-#     class Meta:
-#         model = WaiterUser
-#         fields = ["otp"]
-#
-#
-# class BaristaLoginSerializer(serializers.ModelSerializer):
-#     phone_number = serializers.CharField(required=True)
-#
-#     class Meta:
-#         model = BaristaUser
-#         fields = ["phone_number"]

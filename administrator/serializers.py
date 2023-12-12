@@ -26,3 +26,30 @@ class AdminLoginSerializer(serializers.ModelSerializer):
             raise AuthenticationFailed("Account disabled, contact admin")
 
         return {"login": user.login, "tokens": user.tokens()}
+
+
+#
+#
+# class WaiterLoginSerializer(serializers.ModelSerializer):
+#     login = serializers.CharField(required=True)
+#     password = serializers.CharField(required=True, write_only=True)
+#
+#     class Meta:
+#         model = WaiterUser
+#         fields = ["login", "password"]
+#
+#
+# class WaiterCheckOTPSerializer(serializers.ModelSerializer):
+#     otp = serializers.IntegerField()
+#
+#     class Meta:
+#         model = WaiterUser
+#         fields = ["otp"]
+#
+#
+# class BaristaLoginSerializer(serializers.ModelSerializer):
+#     phone_number = serializers.CharField(required=True)
+#
+#     class Meta:
+#         model = BaristaUser
+#         fields = ["phone_number"]
