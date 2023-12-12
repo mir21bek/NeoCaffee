@@ -29,3 +29,8 @@ class ExtraItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExtraItem
         fields = ("name", "price")
+
+
+class MenuAndExtraItemsSerializer(serializers.Serializer):
+    menus = MenuSerializer(many=True, read_only=True)
+    extra_items = ExtraItemSerializer(many=True, read_only=True)

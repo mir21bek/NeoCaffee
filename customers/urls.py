@@ -3,7 +3,7 @@ from .views import (
     CustomerRegistrationView,
     CustomerCheckOTPView,
     CustomerLoginView,
-    CustomerProfileAPIView,
+    CustomerProfileView,
 )
 
 urlpatterns = [
@@ -40,7 +40,7 @@ urlpatterns = [
     # ),
     path(
         "customer/profile/",
-        CustomerProfileAPIView.as_view(),
+        CustomerProfileView.as_view(),
         name="customer-profile",
     ),
 ]

@@ -35,7 +35,7 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "user",
-            "products_menu",
+            "menu",
             "extra_products",
             "paid",
             "status",
