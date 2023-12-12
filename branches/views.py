@@ -10,13 +10,13 @@ from .serializers import BranchesSerializer
 class ListBranchesAPIView(generics.ListAPIView):
     queryset = Branches.objects.all()
     serializer_class = BranchesSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class BranchesDetailAPIView(generics.RetrieveAPIView):
     queryset = Branches.objects.all()
     serializer_class = BranchesSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         instance = self.get_object()
