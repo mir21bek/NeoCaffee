@@ -11,7 +11,7 @@ def generate_otp(length=4):
 def send_otp(phone_number, otp):
     client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
     message = client.messages.create(
-        body=f"Асель где ты все хорошо с тобой?: {otp}",
+        body=f"С наступающим новым кодом)) : {otp}",
         from_=settings.TWILIO_SERVER_SID,
         to=phone_number,
     )

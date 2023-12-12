@@ -12,6 +12,7 @@ from .serializers import (
     CustomerProfileSerializer,
 )
 from .utils import generate_otp, send_otp
+from administrator.permissions import IsClientUser
 
 
 class CustomerRegistrationView(generics.GenericAPIView):
@@ -72,7 +73,7 @@ class CustomerCheckOTPView(generics.GenericAPIView):
 
 class CustomerProfileView(viewsets.ModelViewSet):
     serializer_class = CustomerProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsClientUser]
 
     def get_queryset(self):
-        return BaseUser.objects.filter(id=self.request.user.id, role="client")
+        return BaseUser.objects.filter(id=self.request.user.id)

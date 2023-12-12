@@ -20,7 +20,7 @@ class BaseUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=100, unique=True, blank=True, null=True)
     position = models.CharField(
         max_length=50,
-        choices=[("waiter", "Waiter"), ("barista", "Barista")],
+        choices=[("waiter", "Waiter"), ("barista", "Barista"), ("admin", "Admin")],
         blank=True,
         null=True,
     )
