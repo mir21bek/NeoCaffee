@@ -1,144 +1,107 @@
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
+# models.py
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
-from order.models import OrderItem
-from .managers import UserManager
-from .services import validate_phone_number
-from django.contrib.auth.models import AbstractUser
+
+from branches.models import Branches
+from .managers import BaseManager
 
 
-class BaseUser(AbstractUser):
-    username = models.CharField(max_length=50, null=True, blank=True)
-    phone_number = models.CharField(
-        validators=[validate_phone_number], max_length=17, unique=True
-    )
+class BaseUser(AbstractBaseUser, PermissionsMixin):
+    ROLES = [
+        ("admin", "Admin"),
+        ("waiter", "Waiter"),
+        ("barista", "Barista"),
+        ("client", "Client"),
+    ]
+    login = models.CharField(max_length=100, null=True, blank=True)
+    password = models.CharField(max_length=255, null=True, blank=True)
+    phone_number = models.CharField(max_length=15, unique=True, blank=True, null=True)
     date_of_birth = models.DateField(null=True, blank=True)
+    username = models.CharField(max_length=100, unique=True, blank=True, null=True)
+    position = models.CharField(
+        max_length=50,
+        choices=[("waiter", "Waiter"), ("barista", "Barista")],
+        blank=True,
+        null=True,
+    )
+    DAY_SHIFT = "day_shift"
+    NIGHT_SHIFT = "night_shift"
+    DAY_OFF = "day_off"
+
+    SHIFT_CHOICES = [
+        (DAY_SHIFT, "Дневная смена с 10:00 до 17:00"),
+        (NIGHT_SHIFT, "Вечерняя смена с 17:00 до 23:00"),
+        (DAY_OFF, "Выходной"),
+    ]
+    date = models.DateField(verbose_name="График работы", null=True, blank=True)
+    monday = models.CharField(
+        max_length=20,
+        choices=SHIFT_CHOICES,
+        verbose_name="Выберите смену",
+        null=True,
+        blank=True,
+    )
+    tuesday = models.CharField(
+        max_length=20,
+        choices=SHIFT_CHOICES,
+        verbose_name="Выберите смену",
+        null=True,
+        blank=True,
+    )
+    wednesday = models.CharField(
+        max_length=20,
+        choices=SHIFT_CHOICES,
+        verbose_name="Выберите смену",
+        null=True,
+        blank=True,
+    )
+    thursday = models.CharField(
+        max_length=20,
+        choices=SHIFT_CHOICES,
+        verbose_name="Выберите смену",
+        null=True,
+        blank=True,
+    )
+    friday = models.CharField(
+        max_length=20,
+        choices=SHIFT_CHOICES,
+        verbose_name="Выберите смену",
+        null=True,
+        blank=True,
+    )
+    saturday = models.CharField(
+        max_length=20,
+        choices=SHIFT_CHOICES,
+        verbose_name="Выберите смену",
+        null=True,
+        blank=True,
+    )
+    sunday = models.CharField(
+        max_length=20,
+        choices=SHIFT_CHOICES,
+        verbose_name="Выберите смену",
+        null=True,
+        blank=True,
+    )
+    branch = models.ForeignKey(
+        Branches, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    bonuses = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    role = models.CharField(max_length=10, choices=ROLES, default="client")
     otp = models.CharField(max_length=4, null=True, blank=True)
     is_verify = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
 
-    USERNAME_FIELD = "phone_number"
+    USERNAME_FIELD = "username"
     REQUIRED_FIELDS = []
 
-    objects = UserManager()
+    objects = BaseManager()
 
     def __str__(self):
-        return str(self.phone_number) if self.phone_number else f"User {self.id}"
+        return f" ФИО: {self.username}, Номер телефона: {self.phone_number}"
 
     class Meta:
-        verbose_name = "Управляющий"
-        verbose_name_plural = "Управляющий"
-
-
-class CustomerUser(BaseUser):
-    user = models.ForeignKey(
-        BaseUser,
-        on_delete=models.CASCADE,
-        related_name="customers",
-        null=True,
-        blank=True,
-    )
-
-    def __str__(self):
-        return f"{self.phone_number}"
-
-    class Meta:
-        verbose_name = "Клиенты"
-        verbose_name_plural = "Клиент"
-
-
-class BaristaUser(BaseUser):
-    user = models.ForeignKey(
-        BaseUser,
-        on_delete=models.CASCADE,
-        related_name="barista",
-        null=True,
-        blank=True,
-    )
-
-    def __str__(self):
-        return f"{self.phone_number}"
-
-    class Meta:
-        verbose_name = "Бариста"
-        verbose_name_plural = "Бариста"
-
-
-class WaiterUser(BaseUser):
-    user = models.ForeignKey(
-        BaseUser,
-        on_delete=models.CASCADE,
-        related_name="waiters",
-        null=True,
-        blank=True,
-    )
-    login = models.CharField(max_length=50, null=True, unique=True)
-
-    def __str__(self):
-        return self.login
-
-    class Meta:
-        verbose_name = "Официанты"
-        verbose_name_plural = "Официант"
-
-
-class Role(models.Model):
-    class ChoiceRole(models.TextChoices):
-        BARISTA = "BARISTA", "Barista"
-        WAITER = "WAITER", "Waiter"
-
-    role = models.CharField(max_length=20, choices=ChoiceRole.choices)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.role
-
-
-class StaffUserProfile(models.Model):
-    user_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    user_id = models.PositiveIntegerField()
-    user = GenericForeignKey("user_type", "user_id")
-    role = models.ForeignKey(Role, on_delete=models.CASCADE)
-    login = models.CharField(max_length=50, unique=True)
-    username = models.CharField(max_length=50)
-    surname = models.CharField(max_length=50)
-    phone_number = models.CharField(max_length=17)
-    date_of_birth = models.DateField()
-    schedule = models.DateField()
-    is_active = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"User {self.user}"
-
-    class Meta:
-        ordering = ["username"]
-        indexes = [
-            models.Index(fields=["role"]),
-            models.Index(fields=["username"]),
-            models.Index(fields=["-created_at"]),
-        ]
-
-
-class CustomerProfile(models.Model):
-    user = models.OneToOneField(
-        BaseUser, on_delete=models.CASCADE, related_name="customer_profile"
-    )
-    orders = models.ManyToManyField(OrderItem, related_name="customer_orders")
-    username = models.CharField(max_length=50)
-    surname = models.CharField(max_length=50)
-    phone_number = models.CharField(max_length=17, null=True)
-    date_of_birth = models.DateField()
-    bonuses = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"User {self.user}"
-
-    class Meta:
-        ordering = ["username"]
-        indexes = [
-            models.Index(fields=["username"]),
-            models.Index(fields=["-created_at"]),
-        ]
+        verbose_name = "Пользователи"
+        verbose_name_plural = "Пользовател"

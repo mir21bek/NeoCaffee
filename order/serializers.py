@@ -1,33 +1,47 @@
 from rest_framework import serializers
-
 from .models import Order, OrderItem
-from menu.models import ExtraItem, Menu
-
-
-class OrderExtraItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ExtraItem
-        fields = "__all__"
-
-
-class MenuItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Menu
-        fields = ("name", "price")
+from menu.serializers import ExtraItemSerializer, MenuSerializer
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    menu = MenuItemSerializer()
-    extra_product = OrderExtraItemSerializer()
+    menu = MenuSerializer(read_only=True)
+    extra_product = ExtraItemSerializer(read_only=True)
 
     class Meta:
         model = OrderItem
-        fields = ("id", "menu", "extra_product", "quantity")
+        fields = (
+            "id",
+            "branch",
+            "menu",
+            "menu_quantity",
+            "extra_product",
+            "extra_product_quantity",
+        )
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer(many=True)
+    items = OrderItemSerializer()
+    total_price = serializers.SerializerMethodField()
+    cashback = serializers.SerializerMethodField()
+
+    def get_total_price(self, obj):
+        return obj.get_total_cost()
+
+    def get_cashback(self, obj):
+        return obj.get_cashback()
 
     class Meta:
         model = Order
-        fields = ("id", "user", "items", "created", "updated", "paid")
+        fields = (
+            "id",
+            "user",
+            "menu",
+            "extra_products",
+            "paid",
+            "status",
+            "items",
+            "total_price",
+            "cashback",
+            "created",
+            "updated",
+        )

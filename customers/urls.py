@@ -3,10 +3,7 @@ from .views import (
     CustomerRegistrationView,
     CustomerCheckOTPView,
     CustomerLoginView,
-    LoginWaiterView,
-    CheckOTPViewForWaiter,
-    BaristaLoginView,
-    BaristaCheckOTPView,
+    CustomerProfileView,
 )
 
 urlpatterns = [
@@ -25,20 +22,25 @@ urlpatterns = [
         CustomerLoginView.as_view(),
         name="customer-login",
     ),
-    path("waiter/login/", LoginWaiterView.as_view(), name="waiter-login"),
+    # path("waiter/login/", LoginWaiterView.as_view(), name="waiter-login"),
+    # path(
+    #     "waiter/check-verification-code/",
+    #     CheckOTPViewForWaiter.as_view(),
+    #     name="check-code-for-waiter",
+    # ),
+    # path(
+    #     "barista/login/",
+    #     BaristaLoginView.as_view(),
+    #     name="barista-login",
+    # ),
+    # path(
+    #     "barista/check-verification-code/",
+    #     BaristaCheckOTPView.as_view(),
+    #     name="check-code-for-barista",
+    # ),
     path(
-        "waiter/check-verification-code/",
-        CheckOTPViewForWaiter.as_view(),
-        name="check-code-for-waiter",
-    ),
-    path(
-        "barista/login/",
-        BaristaLoginView.as_view(),
-        name="barista-login",
-    ),
-    path(
-        "barista/check-verification-code/",
-        BaristaCheckOTPView.as_view(),
-        name="check-code-for-barista",
+        "customer/profile/",
+        CustomerProfileView.as_view(),
+        name="customer-profile",
     ),
 ]

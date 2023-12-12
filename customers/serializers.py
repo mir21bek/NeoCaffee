@@ -1,33 +1,32 @@
 # serializers.py
 
 from rest_framework import serializers
-from .models import BaristaUser, CustomerUser, WaiterUser
+from order.serializers import OrderSerializer
+from .models import BaseUser
 
 
-class RegistrationSerializer(serializers.ModelSerializer):
-    phone_number = serializers.CharField(required=True)
-    date_of_birth = serializers.DateField(format="%Y-%m-%d")
+from django.contrib.auth.hashers import make_password
 
+
+class CustomerRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomerUser
+        model = BaseUser
         fields = ["username", "phone_number", "date_of_birth"]
+        extra_kwargs = {
+            "password": {"write_only": True},
+            "date_of_birth": {"format": "%d %m %Y"},
+        }
 
-    def save(self):
-        phone_number = self.validated_data["phone_number"]
-        user = CustomerUser(
-            username=self.validated_data["username"],
-            phone_number=phone_number,
-            date_of_birth=self.validated_data["date_of_birth"],
-        )
-        user.save()
-        return user
+    def create(self, validated_data):
+        validated_data["role"] = "client"
+        return BaseUser.objects.create(**validated_data)
 
 
 class CustomerLoginSerializer(serializers.ModelSerializer):
     phone_number = serializers.CharField(required=True)
 
     class Meta:
-        model = CustomerUser
+        model = BaseUser
         fields = ["phone_number"]
 
 
@@ -35,30 +34,48 @@ class CustomerCheckOTPSerializer(serializers.ModelSerializer):
     otp = serializers.IntegerField()
 
     class Meta:
-        model = CustomerUser
+        model = BaseUser
         fields = ["otp"]
 
 
-class WaiterLoginSerializer(serializers.ModelSerializer):
-    login = serializers.CharField(required=True)
-    password = serializers.CharField(required=True, write_only=True)
+class CustomerProfileSerializer(serializers.ModelSerializer):
+    orders = OrderSerializer(many=True, read_only=True, source="user.customer_orders")
 
     class Meta:
-        model = WaiterUser
-        fields = ["login", "password"]
+        model = BaseUser
+        fields = ["username", "phone_number", "date_of_birth", "bonuses", "orders"]
+        read_only_fields = ["bonuses"]
+
+    def update(self, instance, validated_data):
+        if instance.role == "client":
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+            instance.save()
+        return instance
 
 
-class WaiterCheckOTPSerializer(serializers.ModelSerializer):
-    otp = serializers.IntegerField()
-
-    class Meta:
-        model = WaiterUser
-        fields = ["otp"]
-
-
-class BaristaLoginSerializer(serializers.ModelSerializer):
-    phone_number = serializers.CharField(required=True)
-
-    class Meta:
-        model = BaristaUser
-        fields = ["phone_number"]
+#
+#
+# class WaiterLoginSerializer(serializers.ModelSerializer):
+#     login = serializers.CharField(required=True)
+#     password = serializers.CharField(required=True, write_only=True)
+#
+#     class Meta:
+#         model = WaiterUser
+#         fields = ["login", "password"]
+#
+#
+# class WaiterCheckOTPSerializer(serializers.ModelSerializer):
+#     otp = serializers.IntegerField()
+#
+#     class Meta:
+#         model = WaiterUser
+#         fields = ["otp"]
+#
+#
+# class BaristaLoginSerializer(serializers.ModelSerializer):
+#     phone_number = serializers.CharField(required=True)
+#
+#     class Meta:
+#         model = BaristaUser
+#         fields = ["phone_number"]
