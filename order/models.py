@@ -31,11 +31,18 @@ class Order(models.Model):
     )
     menu = models.ManyToManyField("menu.Menu", through="OrderItem")
     extra_products = models.ManyToManyField("menu.ExtraItem", through="OrderItem")
+    bonuses_writen_off = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        verbose_name="бонусы для списания",
+        null=True,
+        blank=True,
+    )
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    paid = models.BooleanField(default=False)
     branch = models.ForeignKey(
-        "branches.Branches", on_delete=models.SET_NULL, null=True, blank=True
+        "branches.Branches", on_delete=models.SET_NULL, null=True
     )
 
     class Meta:
@@ -46,10 +53,11 @@ class Order(models.Model):
         return f"Order {self.id}"
 
     def get_total_cost(self):
-        return sum(item.get_cost() for item in self.items.all())
+        total_cost = sum(item.get_cost() for item in self.items.all())
+        return max(total_cost - self.bonuses_writen_off, Decimal("0.00"))
 
     def get_cashback(self):
-        if self.status == self.COMPLETED and self.paid:
+        if self.status == self.COMPLETED:
             total_cost = self.get_total_cost()
             cashback = total_cost * Decimal("0.05")
             if self.user and self.user.role == "client":
@@ -58,6 +66,17 @@ class Order(models.Model):
             return cashback
         return Decimal("0.00")
 
+    def apply_bonuses(self, bonuses_amount):
+        if self.user.bonuses < bonuses_amount:
+            raise ValueError("Недостаточно бонусов")
+        self.user.bonuses -= bonuses_amount
+        self.bonuses_writen_off = bonuses_amount
+        self.user.save()
+        self.save()
+
+        total_cost = self.get_total_cost()
+        return max(total_cost, Decimal("0.00"))
+
     def update_status(self, new_status):
         if new_status in [self.IN_PROCESS, self.DONE, self.CANCELLED, self.COMPLETED]:
             self.status = new_status
@@ -65,16 +84,9 @@ class Order(models.Model):
         else:
             raise ValueError("Неверный статус заказа.")
 
-    def mark_as_paid(self):
-        self.paid = True
-        self.save()
-
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
-    branch = models.ForeignKey(
-        Branches, on_delete=models.CASCADE, related_name="branches_in_order", null=True
-    )
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE, related_name="order_items")
     menu_quantity = models.PositiveIntegerField(default=1)
     extra_product = models.ForeignKey(

@@ -1,3 +1,5 @@
+from django.db.models import Count
+from django.utils import timezone
 from rest_framework import generics, permissions, viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
@@ -47,7 +49,18 @@ class PopularDishesView(generics.ListAPIView):
     serializer_class = MenuSerializer
 
     def get_queryset(self):
-        return Menu.objects.filter(popular=True)[:5]
+        today = timezone.now()
+        first_day_of_month = today.replace(day=1)
+
+        return (
+            Menu.objects.filter(
+                available=True,
+                order_items__order__created__gte=first_day_of_month,
+                order_items__order__created__lte=today,
+            )
+            .annotate(total_ordered=Count("order_items"))
+            .order_by("-total_ordered")[:3]
+        )
 
 
 class MenuAndExtraItemsView(APIView):

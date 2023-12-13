@@ -18,10 +18,9 @@ class MenuAdmin(admin.ModelAdmin):
         "price",
         "available",
         "created",
-        "popular",
     )
-    list_filter = ("available", "popular", "created", "updated")
-    list_editable = ("price", "popular", "available")
+    list_filter = ("available", "created", "updated")
+    list_editable = ("price", "available")
     prepopulated_fields = {"slug": ("name",)}
 
 

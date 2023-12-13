@@ -21,7 +21,6 @@ class MenuSerializer(serializers.ModelSerializer):
             "image",
             "price",
             "available",
-            "popular",
         )
 
 
