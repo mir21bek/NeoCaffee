@@ -1,27 +1,25 @@
 from decimal import Decimal
 from django.db import models
 from django.conf import settings
-from branches.models import Branches
 from menu.models import Menu, ExtraItem
 
 
 class Order(models.Model):
-    NEW, IN_PROCESS, DONE, CANCELLED, COMPLETED = (
-        "Новый",
-        "В процессе",
-        "Готово",
-        "Отменено",
-        "Завершено",
-    )
-    StatusChoice = [
-        (NEW, "Новый"),
-        (IN_PROCESS, "В процессе"),
-        (DONE, "Готово"),
-        (CANCELLED, "Отменено"),
-        (COMPLETED, "Завершено"),
+    TYPE_CHOICES = [
+        ("takeaway", "На вынос"),
+        ("inplace", "В заведении"),
     ]
 
-    status = models.CharField(max_length=20, choices=StatusChoice, default=NEW)
+    STATUS_CHOICES = [
+        ('new', "Новый"),
+        ('in_process', "В процессе"),
+        ('done', "Готово"),
+        ('cancelled', "Отменено"),
+        ('completed', "Завершено"),
+    ]
+
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="new")
+    order_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default="takeaway")
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -44,6 +42,27 @@ class Order(models.Model):
     branch = models.ForeignKey(
         "branches.Branches", on_delete=models.SET_NULL, null=True
     )
+
+    def set_in_process(self):
+        if self.status == "new":
+            self.status = "in_process"
+            self.save()
+            return True
+        return False
+
+    def set_completed(self):
+        if self.status in ["new", "in_process"]:
+            self.status = "completed"
+            self.save()
+            return True
+        return False
+
+    def set_cancelled(self):
+        if self.status not in ["completed", "cancelled"]:
+            self.status = "cancelled"
+            self.save()
+            return True
+        return False
 
     class Meta:
         ordering = ["-created"]
@@ -76,13 +95,6 @@ class Order(models.Model):
 
         total_cost = self.get_total_cost()
         return max(total_cost, Decimal("0.00"))
-
-    def update_status(self, new_status):
-        if new_status in [self.IN_PROCESS, self.DONE, self.CANCELLED, self.COMPLETED]:
-            self.status = new_status
-            self.save()
-        else:
-            raise ValueError("Неверный статус заказа.")
 
 
 class OrderItem(models.Model):
