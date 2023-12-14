@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "branches.apps.BranchesConfig",
     "customers.apps.CustomersConfig",
     "order.apps.OrderConfig",
+    "warehouse.apps.WarehouseConfig",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -210,3 +211,6 @@ CORS_ALLOW_METHODS = [
     "POST",
     "PUT",
 ]
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 1209600

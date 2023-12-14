@@ -10,7 +10,7 @@ class IsAdminUser(permissions.BasePermission):
         return (
             request.user
             and request.user.is_authenticated
-            and request.user.position == "admin"
+            and request.user.role == "admin"
         )
 
 

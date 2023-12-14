@@ -13,14 +13,15 @@ class BaseUser(AbstractBaseUser, PermissionsMixin):
         ("barista", "Barista"),
         ("client", "Client"),
     ]
-    login = models.CharField(max_length=100, null=True, blank=True)
+    login = models.CharField(max_length=100, unique=True, null=True, blank=True)
     password = models.CharField(max_length=255, null=True, blank=True)
     phone_number = models.CharField(max_length=15, unique=True, blank=True, null=True)
     date_of_birth = models.DateField(null=True, blank=True)
     username = models.CharField(max_length=100, unique=True, blank=True, null=True)
+    full_name = models.CharField(max_length=255, blank=True, null=True)
     position = models.CharField(
         max_length=50,
-        choices=[("waiter", "Waiter"), ("barista", "Barista"), ("admin", "Admin")],
+        choices=[("waiter", "Waiter"), ("barista", "Barista")],
         blank=True,
         null=True,
     )
@@ -87,7 +88,7 @@ class BaseUser(AbstractBaseUser, PermissionsMixin):
         Branches, on_delete=models.SET_NULL, null=True, blank=True
     )
     bonuses = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    role = models.CharField(max_length=10, choices=ROLES, default="client")
+    role = models.CharField(max_length=10, choices=ROLES)
     otp = models.CharField(max_length=4, null=True, blank=True)
     is_verify = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -103,5 +104,5 @@ class BaseUser(AbstractBaseUser, PermissionsMixin):
         return f" ФИО: {self.username}, Номер телефона: {self.phone_number}"
 
     class Meta:
-        verbose_name = "Пользователи"
-        verbose_name_plural = "Пользовател"
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
