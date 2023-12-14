@@ -1,47 +1,59 @@
 from rest_framework import serializers
+
+from menu.models import Menu, ExtraItem
 from .models import Order, OrderItem
 from menu.serializers import ExtraItemSerializer, MenuSerializer
 
 
-class OrderItemSerializer(serializers.ModelSerializer):
-    menu = MenuSerializer(read_only=True)
-    extra_product = ExtraItemSerializer(read_only=True)
+class OrderMenuSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Menu
+        fields = ["name", "price"]
 
+
+class OrderExtraProduct(serializers.ModelSerializer):
+    class Meta:
+        model = ExtraItem
+        fields = ["name", "price"]
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        fields = (
-            "id",
-            "branch",
-            "menu",
-            "menu_quantity",
-            "extra_product",
-            "extra_product_quantity",
-        )
+        fields = ["menu_quantity", "extra_product_quantity"]
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer()
-    total_price = serializers.SerializerMethodField()
+    items = OrderItemSerializer(many=True)
+    menu = OrderMenuSerializer(many=True)
+    extra_products = OrderExtraProduct(many=True)
     cashback = serializers.SerializerMethodField()
-
-    def get_total_price(self, obj):
-        return obj.get_total_cost()
 
     def get_cashback(self, obj):
         return obj.get_cashback()
 
     class Meta:
         model = Order
-        fields = (
+        fields = [
             "id",
+            "status",
             "user",
             "menu",
             "extra_products",
-            "paid",
-            "status",
             "items",
-            "total_price",
+            "bonuses_writen_off",
             "cashback",
             "created",
             "updated",
+            "branch",
+            "get_total_cost",
+        ]
+
+    def create(self, validated_data):
+        return Order.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.apply_bonuses(
+            validated_data.get("bonuses_writen_off", instance.bonuses_writen_off)
         )
+        return instance

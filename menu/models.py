@@ -37,7 +37,6 @@ class Menu(models.Model):
     )
     price = models.DecimalField(max_digits=7, decimal_places=2, verbose_name="Цена")
     available = models.BooleanField(default=True, verbose_name="В наличии")
-    popular = models.BooleanField(default=False, verbose_name="Популярные")
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
