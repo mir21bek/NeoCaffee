@@ -4,20 +4,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('branches', '0004_remove_branches_work_schedule_branches_friday_and_more'),
+        ("branches", "0004_remove_branches_work_schedule_branches_friday_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='branches',
-            name='map_link',
-            field=models.URLField(blank=True, null=True, verbose_name='Ссылка на 2GIS'),
+            model_name="branches",
+            name="map_link",
+            field=models.URLField(blank=True, null=True, verbose_name="Ссылка на 2GIS"),
         ),
         migrations.AlterField(
-            model_name='branches',
-            name='date',
-            field=models.DateField(blank=True, null=True, verbose_name='График работы: Выберите дату'),
+            model_name="branches",
+            name="date",
+            field=models.DateField(
+                blank=True, null=True, verbose_name="График работы: Выберите дату"
+            ),
         ),
     ]

@@ -2,7 +2,6 @@ from rest_framework import permissions
 
 
 class IsAdminUser(permissions.BasePermission):
-
     def has_permission(self, request, view):
         return (
             request.user
@@ -22,6 +21,8 @@ class IsClientUser(permissions.BasePermission):
 
 class IsBarista(permissions.BasePermission):
     def has_permission(self, request, view):
-        return (request.user
-                and request.user.is_authenticated
-                and request.user.role == "barista")
+        return (
+            request.user
+            and request.user.is_authenticated
+            and request.user.role == "barista"
+        )

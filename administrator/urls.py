@@ -26,12 +26,14 @@ urlpatterns = [
     ),
     path("category/", CategoryListCreateView.as_view(), name="category-create"),
     path("category/<int:pk>/", CategoryDeleteView.as_view(), name="category-delete"),
-    path('menu/create/', MenuCreateView.as_view(), name='menu-create'),
-    path('branches/', BranchListCreateView.as_view(), name='branch-list-create'),
-    path('branches/<int:id>/', BranchDetailView.as_view(), name='branch-detail'),
-    path('staff/create', StaffCreateView.as_view(), name='staff-create'),
-    path('staff/branch/<int:branch_id>/', StaffByBranchView.as_view(), name='staff-list'),
-    path('staff/<int:id>/', StaffDetailView.as_view(), name='employee-detail'),
+    path("menu/create/", MenuCreateView.as_view(), name="menu-create"),
+    path("branches/", BranchListCreateView.as_view(), name="branch-list-create"),
+    path("branches/<int:id>/", BranchDetailView.as_view(), name="branch-detail"),
+    path("staff/create", StaffCreateView.as_view(), name="staff-create"),
+    path(
+        "staff/branch/<int:branch_id>/", StaffByBranchView.as_view(), name="staff-list"
+    ),
+    path("staff/<int:id>/", StaffDetailView.as_view(), name="employee-detail"),
 ]
 
 urlpatterns += router.urls

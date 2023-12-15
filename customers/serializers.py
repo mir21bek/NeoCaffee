@@ -11,7 +11,7 @@ from django.contrib.auth.hashers import make_password
 class CustomerRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = BaseUser
-        fields = ["username", "phone_number", "date_of_birth"]
+        fields = ["full_name", "phone_number", "date_of_birth"]
         extra_kwargs = {
             "password": {"write_only": True},
             "date_of_birth": {"format": "%d %m %Y"},
@@ -43,7 +43,7 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BaseUser
-        fields = ["username", "phone_number", "date_of_birth", "bonuses", "orders"]
+        fields = ["full_name", "phone_number", "date_of_birth", "bonuses", "orders"]
         read_only_fields = ["bonuses"]
 
     def update(self, instance, validated_data):

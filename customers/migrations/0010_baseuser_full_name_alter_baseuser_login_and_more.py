@@ -4,25 +4,33 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('customers', '0009_alter_baseuser_position_alter_baseuser_role'),
+        ("customers", "0009_alter_baseuser_position_alter_baseuser_role"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='baseuser',
-            name='full_name',
+            model_name="baseuser",
+            name="full_name",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='baseuser',
-            name='login',
+            model_name="baseuser",
+            name="login",
             field=models.CharField(blank=True, max_length=100, null=True, unique=True),
         ),
         migrations.AlterField(
-            model_name='baseuser',
-            name='role',
-            field=models.CharField(choices=[('admin', 'Admin'), ('waiter', 'Waiter'), ('barista', 'Barista'), ('client', 'Client')], default='client', max_length=10),
+            model_name="baseuser",
+            name="role",
+            field=models.CharField(
+                choices=[
+                    ("admin", "Admin"),
+                    ("waiter", "Waiter"),
+                    ("barista", "Barista"),
+                    ("client", "Client"),
+                ],
+                default="client",
+                max_length=10,
+            ),
         ),
     ]

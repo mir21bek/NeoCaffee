@@ -1,3 +1,4 @@
+import uuid
 from decimal import Decimal
 from django.db import models
 from django.conf import settings
@@ -11,21 +12,25 @@ class Order(models.Model):
     ]
 
     STATUS_CHOICES = [
-        ('new', "Новый"),
-        ('in_process', "В процессе"),
-        ('done', "Готово"),
-        ('cancelled', "Отменено"),
-        ('completed', "Завершено"),
+        ("new", "Новый"),
+        ("in_process", "В процессе"),
+        ("done", "Готово"),
+        ("cancelled", "Отменено"),
+        ("completed", "Завершено"),
     ]
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="new")
-    order_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default="takeaway")
+    order_type = models.CharField(
+        max_length=20, choices=TYPE_CHOICES, default="takeaway"
+    )
+    custom_order_id = models.CharField(
+        max_length=255, editable=False, unique=True, null=True, blank=True
+    )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         related_name="customer_orders",
         null=True,
-        blank=True,
     )
     menu = models.ManyToManyField("menu.Menu", through="OrderItem")
     extra_products = models.ManyToManyField("menu.ExtraItem", through="OrderItem")
@@ -42,6 +47,11 @@ class Order(models.Model):
     branch = models.ForeignKey(
         "branches.Branches", on_delete=models.SET_NULL, null=True
     )
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.custom_order_id = f"M-{self.id}"
+        super().save(update_fields=["custom_order_id"])
 
     def set_in_process(self):
         if self.status == "new":
@@ -76,7 +86,7 @@ class Order(models.Model):
         return max(total_cost - self.bonuses_writen_off, Decimal("0.00"))
 
     def get_cashback(self):
-        if self.status == self.COMPLETED:
+        if self.status == "completed":
             total_cost = self.get_total_cost()
             cashback = total_cost * Decimal("0.05")
             if self.user and self.user.role == "client":
@@ -108,7 +118,7 @@ class OrderItem(models.Model):
         blank=True,
         related_name="extra_order",
     )
-    extra_product_quantity = models.PositiveIntegerField(default=1)
+    extra_product_quantity = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"OrderItem {self.id}"

@@ -164,7 +164,7 @@ class BranchListCreateView(generics.ListCreateAPIView):
 class BranchDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Branches.objects.all()
     serializer_class = AdminBranchSerializer
-    lookup_field = 'id'
+    lookup_field = "id"
 
 
 """
@@ -176,9 +176,9 @@ class StaffCreateView(generics.CreateAPIView):
     serializer_class = AdminStaffSerializers
 
     def perform_create(self, serializer):
-        position = self.request.data.get('position', None)
+        position = self.request.data.get("position", None)
         if position:
-            serializer.validated_data['role'] = position
+            serializer.validated_data["role"] = position
 
         serializer.save()
 
@@ -190,13 +190,14 @@ class StaffByBranchView(generics.ListAPIView):
     serializer_class = AdminStaffSerializers
 
     def get_queryset(self):
-        branch_id = self.kwargs['branch_id']
-        queryset = BaseUser.objects.filter(branch_id=branch_id, role__in=['waiter', 'barista'])
+        branch_id = self.kwargs["branch_id"]
+        queryset = BaseUser.objects.filter(
+            branch_id=branch_id, role__in=["waiter", "barista"]
+        )
         return queryset
 
 
 class StaffDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AdminStaffSerializers
-    queryset = BaseUser.objects.filter(role__in=['waiter', 'barista'])
-    lookup_field = 'id'
-
+    queryset = BaseUser.objects.filter(role__in=["waiter", "barista"])
+    lookup_field = "id"

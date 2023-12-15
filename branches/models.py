@@ -6,7 +6,9 @@ class Branches(models.Model):
     name = models.CharField(max_length=100, verbose_name="Название филиала")
     address = models.CharField(max_length=255, verbose_name="Адрес")
     phone_number = models.CharField(max_length=13, verbose_name="Телефон номер")
-    date = models.DateField(verbose_name="График работы: Выберите дату", null=True, blank=True)
+    date = models.DateField(
+        verbose_name="График работы: Выберите дату", null=True, blank=True
+    )
     map_link = models.URLField(verbose_name="Ссылка на 2GIS", null=True, blank=True)
     image = models.ImageField(upload_to="media/image_branches", verbose_name="Фото")
     WORK_DAY = "work_day"

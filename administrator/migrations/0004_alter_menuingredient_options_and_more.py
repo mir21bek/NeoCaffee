@@ -4,33 +4,48 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('administrator', '0003_initial'),
+        ("administrator", "0003_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='menuingredient',
-            options={'ordering': ['name'], 'verbose_name': 'Ингредиент', 'verbose_name_plural': 'Ингредиенты'},
+            name="menuingredient",
+            options={
+                "ordering": ["name"],
+                "verbose_name": "Ингредиент",
+                "verbose_name_plural": "Ингредиенты",
+            },
         ),
         migrations.AlterField(
-            model_name='menuingredient',
-            name='measurement_unit',
-            field=models.CharField(choices=[('kg', 'кг'), ('g', 'г'), ('ml', 'мл'), ('l', 'л'), ('pcs', 'шт')], max_length=100, verbose_name='Единица измерения'),
+            model_name="menuingredient",
+            name="measurement_unit",
+            field=models.CharField(
+                choices=[
+                    ("kg", "кг"),
+                    ("g", "г"),
+                    ("ml", "мл"),
+                    ("l", "л"),
+                    ("pcs", "шт"),
+                ],
+                max_length=100,
+                verbose_name="Единица измерения",
+            ),
         ),
         migrations.AlterField(
-            model_name='menuingredient',
-            name='name',
-            field=models.CharField(max_length=200, verbose_name='Название ингредиента'),
+            model_name="menuingredient",
+            name="name",
+            field=models.CharField(max_length=200, verbose_name="Название ингредиента"),
         ),
         migrations.AlterField(
-            model_name='menuingredient',
-            name='quantity',
-            field=models.PositiveIntegerField(default=0, verbose_name='Количество на складе'),
+            model_name="menuingredient",
+            name="quantity",
+            field=models.PositiveIntegerField(
+                default=0, verbose_name="Количество на складе"
+            ),
         ),
         migrations.AddIndex(
-            model_name='menuingredient',
-            index=models.Index(fields=['name'], name='administrat_name_1ee74d_idx'),
+            model_name="menuingredient",
+            index=models.Index(fields=["name"], name="administrat_name_1ee74d_idx"),
         ),
     ]

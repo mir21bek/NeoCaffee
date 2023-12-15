@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "barista.apps.BaristaConfig",
 ]
 
 
@@ -212,5 +213,5 @@ CORS_ALLOW_METHODS = [
     "PUT",
 ]
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_AGE = 1209600

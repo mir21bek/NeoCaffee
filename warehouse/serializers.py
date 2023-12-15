@@ -5,4 +5,4 @@ from .models import InventoryItem
 class InventoryItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = InventoryItem
-        fields = '__all__'
+        fields = "__all__"

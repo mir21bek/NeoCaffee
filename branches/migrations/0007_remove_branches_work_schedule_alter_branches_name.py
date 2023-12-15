@@ -4,19 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('branches', '0006_branches_work_schedule'),
+        ("branches", "0006_branches_work_schedule"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='branches',
-            name='work_schedule',
+            model_name="branches",
+            name="work_schedule",
         ),
         migrations.AlterField(
-            model_name='branches',
-            name='name',
-            field=models.CharField(max_length=100, verbose_name='Название филиала'),
+            model_name="branches",
+            name="name",
+            field=models.CharField(max_length=100, verbose_name="Название филиала"),
         ),
     ]

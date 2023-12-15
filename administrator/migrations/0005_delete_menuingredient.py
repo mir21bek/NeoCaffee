@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('menu', '0003_remove_menu_ingredients'),
-        ('administrator', '0004_alter_menuingredient_options_and_more'),
+        ("menu", "0003_remove_menu_ingredients"),
+        ("administrator", "0004_alter_menuingredient_options_and_more"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='MenuIngredient',
+            name="MenuIngredient",
         ),
     ]

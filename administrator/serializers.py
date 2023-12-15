@@ -67,7 +67,7 @@ class StaffProfileSerializer(serializers.ModelSerializer):
 class AdminCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('id', 'name')
+        fields = ("id", "name")
 
 
 """
@@ -78,7 +78,7 @@ class AdminCategorySerializer(serializers.ModelSerializer):
 class MenuCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Menu
-        fields = ['name', 'description', 'category', 'image', 'price']
+        fields = ["name", "description", "category", "image", "price"]
 
 
 """
@@ -89,8 +89,22 @@ class MenuCreateSerializer(serializers.ModelSerializer):
 class AdminBranchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Branches
-        fields = ('id', 'name', 'image', 'address', 'phone_number', 'map_link',
-                  'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'SHIFT_CHOICES')
+        fields = (
+            "id",
+            "name",
+            "image",
+            "address",
+            "phone_number",
+            "map_link",
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday",
+            "SHIFT_CHOICES",
+        )
 
 
 """
@@ -99,9 +113,25 @@ class AdminBranchSerializer(serializers.ModelSerializer):
 
 
 class AdminStaffSerializers(serializers.ModelSerializer):
-
     class Meta:
         model = BaseUser
-        fields = ('id', 'login', 'password', 'full_name', 'position', 'date_of_birth', 'phone_number', 'branch',
-                  'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'role', 'SHIFT_CHOICES')
-        read_only_fields = ('role',)
+        fields = (
+            "id",
+            "login",
+            "password",
+            "full_name",
+            "position",
+            "date_of_birth",
+            "phone_number",
+            "branch",
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday",
+            "role",
+            "SHIFT_CHOICES",
+        )
+        read_only_fields = ("role",)

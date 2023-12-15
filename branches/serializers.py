@@ -6,8 +6,21 @@ from .models import Branches, CoffeeShop
 class BranchesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Branches
-        fields = ("id", "name", "address", "phone_number", "monday", "tuesday", "wednesday", "thursday", "friday",
-                  "saturday", "sunday", "image")
+        fields = (
+            "id",
+            "name",
+            "address",
+            "map_link",
+            "phone_number",
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday",
+            "image",
+        )
 
 
 class CoffeeShopSerializer(serializers.ModelSerializer):

@@ -4,16 +4,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('administrator', '0003_initial'),
-        ('menu', '0001_initial'),
+        ("administrator", "0003_initial"),
+        ("menu", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='menu',
-            name='ingredients',
-            field=models.ManyToManyField(blank=True, related_name='menus', to='administrator.menuingredient'),
+            model_name="menu",
+            name="ingredients",
+            field=models.ManyToManyField(
+                blank=True, related_name="menus", to="administrator.menuingredient"
+            ),
         ),
     ]

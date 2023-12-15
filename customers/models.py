@@ -101,7 +101,7 @@ class BaseUser(AbstractBaseUser, PermissionsMixin):
     objects = BaseManager()
 
     def __str__(self):
-        return f" ФИО: {self.username}, Номер телефона: {self.phone_number}"
+        return f" ФИО: {self.full_name}, Номер телефона: {self.phone_number}"
 
     class Meta:
         verbose_name = "Пользователь"
