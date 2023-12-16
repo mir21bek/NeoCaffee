@@ -18,7 +18,8 @@ class BaseUser(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(max_length=15, unique=True, blank=True, null=True)
     date_of_birth = models.DateField(null=True, blank=True)
     username = models.CharField(max_length=100, unique=True, blank=True, null=True)
-    full_name = models.CharField(max_length=255, blank=True, null=True)
+    first_name = models.CharField(max_length=255, blank=True, null=True)
+    last_name = models.CharField(max_length=255, blank=True, null=True)
     position = models.CharField(
         max_length=50,
         choices=[("waiter", "Waiter"), ("barista", "Barista")],
@@ -101,7 +102,7 @@ class BaseUser(AbstractBaseUser, PermissionsMixin):
     objects = BaseManager()
 
     def __str__(self):
-        return f" ФИО: {self.full_name}, Номер телефона: {self.phone_number}"
+        return f" ФИО: {self.first_name}, Номер телефона: {self.phone_number}"
 
     class Meta:
         verbose_name = "Пользователь"

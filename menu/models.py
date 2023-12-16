@@ -31,6 +31,7 @@ class Menu(models.Model):
         verbose_name="Категория",
         related_name="menus",
     )
+    extra_product = models.ManyToManyField("ExtraItem")
     description = models.TextField(verbose_name="Описание")
     image = models.ImageField(
         upload_to="media/food_image", verbose_name="Фото блюды", null=True, blank=True

@@ -1,18 +1,14 @@
 from django.db.models import Count
 from django.utils import timezone
-from rest_framework import generics, permissions, viewsets
+from rest_framework import generics
 from rest_framework.generics import get_object_or_404
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
-from .models import Category, Menu, ExtraItem
+from administrator.permissions import IsClientUser
+from .models import Category, Menu
 from .serializers import (
     CategorySerializer,
     MenuSerializer,
-    ExtraItemSerializer,
-    MenuAndExtraItemsSerializer,
 )
-from .signals import post_category_save, post_menu_save
 
 
 class CategoryApiView(generics.ListAPIView):
@@ -23,7 +19,7 @@ class CategoryApiView(generics.ListAPIView):
 
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsClientUser]
 
 
 class MenuListApiView(generics.ListAPIView):
@@ -34,7 +30,7 @@ class MenuListApiView(generics.ListAPIView):
 
     queryset = Menu.objects.all().filter(available=True)
     serializer_class = MenuSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsClientUser]
 
     def get_queryset(self):
         queryset = Menu.objects.filter(available=True)
@@ -47,6 +43,7 @@ class MenuListApiView(generics.ListAPIView):
 
 class PopularDishesView(generics.ListAPIView):
     serializer_class = MenuSerializer
+    permission_classes = [IsClientUser]
 
     def get_queryset(self):
         today = timezone.now()
@@ -61,15 +58,3 @@ class PopularDishesView(generics.ListAPIView):
             .annotate(total_ordered=Count("order_items"))
             .order_by("-total_ordered")[:3]
         )
-
-
-class MenuAndExtraItemsView(APIView):
-    def get(self, request, format=None):
-        menus = Menu.objects.filter(available=True)
-        extra_items = ExtraItem.objects.all()
-
-        serializer = MenuAndExtraItemsSerializer(
-            {"menus": menus, "extra_items": extra_items}
-        )
-
-        return Response(serializer.data)

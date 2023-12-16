@@ -1,10 +1,16 @@
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework import generics
 from rest_framework.response import Response
 from administrator.permissions import IsBarista, IsAdminUser
+from customers.models import BaseUser
 from order.models import Order
 from drf_yasg.utils import swagger_auto_schema
-from .serializers import BaristaOrderSerializers, OrderStatusUpdateSerializer
+from .serializers import (
+    BaristaOrderSerializers,
+    OrderStatusUpdateSerializer,
+    BaristaProfileSerializer,
+)
 
 
 class OrdersView(APIView):
@@ -49,3 +55,11 @@ class UpdateStatusAPIView(APIView):
             return Response(BaristaOrderSerializers(order).data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BaristaProfileAPIView(generics.ListCreateAPIView):
+    serializer_class = BaristaProfileSerializer
+    permission_classes = [IsBarista]
+
+    def get_object(self):
+        return self.request.user

@@ -71,9 +71,9 @@ class CustomerCheckOTPView(generics.GenericAPIView):
         return otp_service.check_and_activate_user(user, otp)
 
 
-class CustomerProfileView(viewsets.ModelViewSet):
+class CustomerProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = CustomerProfileSerializer
     permission_classes = [IsClientUser]
 
-    def get_queryset(self):
-        return BaseUser.objects.filter(id=self.request.user.id)
+    def get_object(self):
+        return self.request.user

@@ -11,7 +11,7 @@ from django.contrib.auth.hashers import make_password
 class CustomerRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = BaseUser
-        fields = ["full_name", "phone_number", "date_of_birth"]
+        fields = ["first_name", "phone_number", "date_of_birth"]
         extra_kwargs = {
             "password": {"write_only": True},
             "date_of_birth": {"format": "%d %m %Y"},
@@ -39,12 +39,30 @@ class CustomerCheckOTPSerializer(serializers.ModelSerializer):
 
 
 class CustomerProfileSerializer(serializers.ModelSerializer):
-    orders = OrderSerializer(many=True, read_only=True, source="user.customer_orders")
+    active_orders = serializers.SerializerMethodField()
+    completed_orders = serializers.SerializerMethodField()
 
     class Meta:
         model = BaseUser
-        fields = ["full_name", "phone_number", "date_of_birth", "bonuses", "orders"]
+        fields = (
+            "first_name",
+            "phone_number",
+            "date_of_birth",
+            "bonuses",
+            "active_orders",
+            "completed_orders",
+        )
         read_only_fields = ["bonuses"]
+
+    def get_active_orders(self, obj):
+        active_statuses = ["new", "in_process"]
+        orders = obj.customer_orders.filter(status__in=active_statuses)
+        return OrderSerializer(orders, many=True).data
+
+    def get_completed_orders(self, obj):
+        completed_statuses = ["done", "completed"]
+        orders = obj.customer_orders.filter(status__in=completed_statuses)
+        return OrderSerializer(orders, many=True).data
 
     def update(self, instance, validated_data):
         if instance.role == "client":

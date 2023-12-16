@@ -9,7 +9,15 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ("name", "slug", "image")
 
 
+class ExtraItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExtraItem
+        fields = ("name", "price")
+
+
 class MenuSerializer(serializers.ModelSerializer):
+    extra_product = ExtraItemSerializer(many=True)
+
     class Meta:
         model = Menu
         fields = (
@@ -21,15 +29,5 @@ class MenuSerializer(serializers.ModelSerializer):
             "image",
             "price",
             "available",
+            "extra_product",
         )
-
-
-class ExtraItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ExtraItem
-        fields = ("name", "price")
-
-
-class MenuAndExtraItemsSerializer(serializers.Serializer):
-    menus = MenuSerializer(many=True, read_only=True)
-    extra_items = ExtraItemSerializer(many=True, read_only=True)

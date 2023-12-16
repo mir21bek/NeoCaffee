@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from order.models import Order
+from customers.models import BaseUser
 
 from django.contrib.auth import get_user_model
 
@@ -10,7 +11,7 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["full_name", "role"]
+        fields = ["first_name", "role"]
 
 
 class BaristaOrderSerializers(serializers.ModelSerializer):
@@ -34,12 +35,12 @@ class BaristaOrderSerializers(serializers.ModelSerializer):
 
         if instance.order_type == "inplace" and user.role == "waiter":
             representation["user_details"] = {
-                "username": user.full_name,
+                "username": user.first_name,
                 "role": "Официант",
             }
         elif instance.order_type == "takeaway" and user.role == "client":
             representation["user_details"] = {
-                "username": user.full_name,
+                "username": user.first_name,
                 "role": "Клиент",
             }
 
@@ -53,3 +54,24 @@ class OrderStatusUpdateSerializer(serializers.Serializer):
     new_status = serializers.ChoiceField(
         choices=Order.STATUS_CHOICES, help_text="выберите статус для заказа"
     )
+
+
+class BaristaProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BaseUser
+        fields = (
+            "first_name",
+            "last_name",
+            "phone_number",
+            "date_of_birth",
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday",
+        )
+
+    def update(self, instance, validated_data):
+        instance

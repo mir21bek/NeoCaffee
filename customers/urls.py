@@ -7,8 +7,6 @@ from .views import (
 )
 from rest_framework import routers
 
-router = routers.DefaultRouter()
-router.register(r"customer/profile/", CustomerProfileView, basename="customer/profile/")
 
 urlpatterns = [
     path(
@@ -26,6 +24,8 @@ urlpatterns = [
         CustomerLoginView.as_view(),
         name="customer-login",
     ),
+    path(
+        "customer/profile/",
+        CustomerProfileView.as_view(),
+    ),
 ]
-
-urlpatterns += router.urls

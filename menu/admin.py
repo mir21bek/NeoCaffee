@@ -19,6 +19,7 @@ class MenuAdmin(admin.ModelAdmin):
         "available",
         "created",
     )
+    filter_horizontal = ["extra_product"]
     list_filter = ("available", "created", "updated")
     list_editable = ("price", "available")
     prepopulated_fields = {"slug": ("name",)}
