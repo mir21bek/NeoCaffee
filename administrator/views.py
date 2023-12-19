@@ -132,13 +132,13 @@ class StaffProfileAPIView(viewsets.ModelViewSet):
 class CategoryListCreateView(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = AdminCategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
 
 class CategoryDeleteView(generics.DestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = AdminCategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
 
 """
@@ -149,6 +149,7 @@ class CategoryDeleteView(generics.DestroyAPIView):
 class MenuCreateView(generics.CreateAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuCreateSerializer
+    permission_classes = [IsAdminUser]
 
 
 """
@@ -159,12 +160,14 @@ class MenuCreateView(generics.CreateAPIView):
 class BranchListCreateView(generics.ListCreateAPIView):
     queryset = Branches.objects.all()
     serializer_class = AdminBranchSerializer
+    permission_classes = [IsAdminUser]
 
 
 class BranchDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Branches.objects.all()
     serializer_class = AdminBranchSerializer
     lookup_field = "id"
+    permission_classes = [IsAdminUser]
 
 
 """
@@ -174,6 +177,7 @@ class BranchDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class StaffCreateView(generics.CreateAPIView):
     serializer_class = AdminStaffSerializers
+    permission_classes = [IsAdminUser]
 
     def perform_create(self, serializer):
         position = self.request.data.get("position", None)
@@ -188,6 +192,7 @@ class StaffCreateView(generics.CreateAPIView):
 
 class StaffByBranchView(generics.ListAPIView):
     serializer_class = AdminStaffSerializers
+    permission_classes = [IsAdminUser]
 
     def get_queryset(self):
         branch_id = self.kwargs["branch_id"]
@@ -201,3 +206,4 @@ class StaffDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AdminStaffSerializers
     queryset = BaseUser.objects.filter(role__in=["waiter", "barista"])
     lookup_field = "id"
+    permission_classes = [IsAdminUser]
