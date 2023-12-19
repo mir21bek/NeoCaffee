@@ -7,16 +7,16 @@ from .models import Order
 
 class OrderCreateAPIView(generics.CreateAPIView):
     serializer_class = OrderItemSerializer
+    permission_classes = [IsClientUser]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.order.user)
 
 
 class OrderHistory(generics.ListAPIView):
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    # permission_classes = [IsClientUser]
-    #
-    # def get_queryset(self):
-    #     user = self.request.user
-    #     return Order.objects.filter(user=user)
+    permission_classes = [IsClientUser]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Order.objects.filter(user=user)
