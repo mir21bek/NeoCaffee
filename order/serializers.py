@@ -2,35 +2,51 @@ from rest_framework import serializers
 
 from menu.models import Menu, ExtraItem
 from .models import Order, OrderItem
-from menu.serializers import ExtraItemSerializer, MenuSerializer
+from branches.models import Branches
 
 
-class OrderMenuSerializer(serializers.ModelSerializer):
+class BranchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Branches
+        fields = ("image", "name")
+
+
+class MenuSerializer(serializers.ModelSerializer):
     class Meta:
         model = Menu
-        fields = ["name", "price"]
+        fields = ("image", "name", "price")
 
 
-class OrderExtraProduct(serializers.ModelSerializer):
+class ExtraItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExtraItem
-        fields = ["name", "price"]
+        fields = ("name", "price")
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderItem
-        fields = ["menu_quantity", "extra_product_quantity"]
-
-
-class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer(many=True)
-    menu = OrderMenuSerializer(many=True)
-    extra_products = OrderExtraProduct(many=True)
+    menu = MenuSerializer(read_only=True)
+    extra_product = ExtraItemSerializer(read_only=True)
     cashback = serializers.SerializerMethodField()
 
     def get_cashback(self, obj):
-        return obj.get_cashback()
+        return obj.apply_cashback()
+
+    class Meta:
+        model = OrderItem
+        fields = (
+            "order",
+            "menu",
+            "menu_quantity",
+            "extra_product",
+            "extra_product_quantity",
+            "bonuses_used",
+            "cashback",
+        )
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    branch = BranchSerializer(read_only=True)
+    items = OrderItemSerializer(many=True)
 
     class Meta:
         model = Order
@@ -38,22 +54,8 @@ class OrderSerializer(serializers.ModelSerializer):
             "id",
             "status",
             "user",
-            "menu",
-            "extra_products",
-            "items",
-            "bonuses_writen_off",
-            "cashback",
-            "created",
-            "updated",
             "branch",
+            "items",
+            "created",
             "get_total_cost",
         ]
-
-    def create(self, validated_data):
-        return Order.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        instance.apply_bonuses(
-            validated_data.get("bonuses_writen_off", instance.bonuses_writen_off)
-        )
-        return instance

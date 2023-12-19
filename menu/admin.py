@@ -27,5 +27,5 @@ class MenuAdmin(admin.ModelAdmin):
 
 @admin.register(ExtraItem)
 class ExtraItemAdmin(admin.ModelAdmin):
-    list_display = ("name", "price")
+    list_display = ("name", "price", "type_extra_product")
     list_filter = ("name", "price")

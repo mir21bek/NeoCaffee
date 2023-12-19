@@ -55,8 +55,12 @@ class Menu(models.Model):
 
 
 class ExtraItem(models.Model):
+    TYPE_CHOICE = (["Milk", "Молоко"], ["Syrop", "Сиропы"])
     choice_category = models.ForeignKey(
         Category, on_delete=models.CASCADE, related_name="extra_products", null=True
+    )
+    type_extra_product = models.CharField(
+        max_length=20, choices=TYPE_CHOICE, null=True, verbose_name="Доп. Продукт"
     )
     name = models.CharField(max_length=100, verbose_name="Название доп. продукта")
     price = models.DecimalField(max_digits=7, decimal_places=2, verbose_name="Цена")

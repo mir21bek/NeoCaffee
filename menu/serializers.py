@@ -12,7 +12,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class ExtraItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExtraItem
-        fields = ("name", "price")
+        fields = ("type_extra_product", "name", "price")
 
 
 class MenuSerializer(serializers.ModelSerializer):
