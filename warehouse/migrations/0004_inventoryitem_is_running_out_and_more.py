@@ -4,20 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('warehouse', '0003_remove_inventoryitem_limit_unit_and_more'),
+        ("warehouse", "0003_remove_inventoryitem_limit_unit_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='inventoryitem',
-            name='is_running_out',
-            field=models.BooleanField(default=False, verbose_name='Заканчивающийся продукт'),
+            model_name="inventoryitem",
+            name="is_running_out",
+            field=models.BooleanField(
+                default=False, verbose_name="Заканчивающийся продукт"
+            ),
         ),
         migrations.AlterField(
-            model_name='inventoryitem',
-            name='category',
-            field=models.CharField(choices=[('ready_products', 'Готовые продукты'), ('raw_materials', 'Сырье'), ('running_out', 'Заканчивающиеся продукты')], max_length=20, verbose_name='Категория'),
+            model_name="inventoryitem",
+            name="category",
+            field=models.CharField(
+                choices=[
+                    ("ready_products", "Готовые продукты"),
+                    ("raw_materials", "Сырье"),
+                    ("running_out", "Заканчивающиеся продукты"),
+                ],
+                max_length=20,
+                verbose_name="Категория",
+            ),
         ),
     ]

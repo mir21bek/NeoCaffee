@@ -17,9 +17,16 @@ class CategoryApiView(generics.ListAPIView):
     Это представление позволяет только чтение (GET) и требует аутентификации пользователя.
     """
 
-    queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [IsClientUser]
+
+    def get_queryset(self):
+        queryset = Category.objects.all()
+        branch_id = self.kwargs.get("branch_id")
+
+        if branch_id:
+            queryset = queryset.filter(branch_id=branch_id)
+        return queryset
 
 
 class MenuListApiView(generics.ListAPIView):
@@ -28,15 +35,18 @@ class MenuListApiView(generics.ListAPIView):
     Это представление позволяет только чтение (GET) и требует аутентификации пользователя.
     """
 
-    queryset = Menu.objects.all().filter(available=True)
     serializer_class = MenuSerializer
     permission_classes = [IsClientUser]
 
     def get_queryset(self):
-        queryset = Menu.objects.filter(available=True)
+        queryset = Menu.objects.all()
         category_slug = self.kwargs.get("category_slug")
-        if category_slug:
-            category = get_object_or_404(Category, slug=category_slug)
+        branch_id = self.kwargs.get("branch_id")
+
+        if category_slug and branch_id:
+            category = get_object_or_404(
+                Category, slug=category_slug, branch_id=branch_id
+            )
             queryset = queryset.filter(category=category)
             return queryset
 

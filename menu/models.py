@@ -2,8 +2,11 @@ from django.db import models
 
 
 class Category(models.Model):
+    branch = models.ForeignKey(
+        "branches.Branches", on_delete=models.SET_NULL, null=True
+    )
     name = models.CharField(max_length=100, verbose_name="Название категории")
-    slug = models.SlugField(max_length=200, unique=True)
+    slug = models.SlugField(max_length=200)
     image = models.ImageField(
         upload_to="media/category_images",
         verbose_name="Фото категории",
@@ -16,6 +19,7 @@ class Category(models.Model):
         indexes = [models.Index(fields=["name"])]
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
+        unique_together = ("branch", "slug")
 
     def __str__(self):
         return self.name
@@ -31,7 +35,10 @@ class Menu(models.Model):
         verbose_name="Категория",
         related_name="menus",
     )
-    extra_product = models.ManyToManyField("ExtraItem")
+    branch = models.ForeignKey(
+        "branches.Branches", on_delete=models.SET_NULL, null=True
+    )
+    extra_product = models.ManyToManyField("ExtraItem", blank=True)
     description = models.TextField(verbose_name="Описание")
     image = models.ImageField(
         upload_to="media/food_image", verbose_name="Фото блюды", null=True, blank=True
