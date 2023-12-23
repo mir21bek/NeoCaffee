@@ -29,6 +29,18 @@ class CategoryApiView(generics.ListAPIView):
         return queryset
 
 
+class MenuApiView(generics.ListAPIView):
+    serializer_class = MenuSerializer
+
+    def get_queryset(self):
+        queryset = Menu.objects.select_related("category", "branch").prefetch_related("extra_product")
+        branch_id = self.kwargs.get("branch_id")
+
+        if branch_id:
+            queryset = queryset.filter(branch_id=branch_id)
+            return queryset
+
+
 class MenuListApiView(generics.ListAPIView):
     """Представление для получения списка доступных блюд.
 
@@ -39,16 +51,16 @@ class MenuListApiView(generics.ListAPIView):
     permission_classes = [IsClientUser]
 
     def get_queryset(self):
-        queryset = Menu.objects.all()
+        queryset = Menu.objects.select_related("category", "branch").prefetch_related("extra_product")
         category_slug = self.kwargs.get("category_slug")
         branch_id = self.kwargs.get("branch_id")
 
-        if category_slug and branch_id:
-            category = get_object_or_404(
-                Category, slug=category_slug, branch_id=branch_id
-            )
-            queryset = queryset.filter(category=category)
-            return queryset
+        if category_slug:
+            queryset = queryset.filter(category__slug=category_slug)
+
+        if branch_id:
+            queryset = queryset.filter(branch_id=branch_id)
+        return queryset
 
 
 class PopularDishesView(generics.ListAPIView):
@@ -56,15 +68,20 @@ class PopularDishesView(generics.ListAPIView):
     permission_classes = [IsClientUser]
 
     def get_queryset(self):
-        today = timezone.now()
-        first_day_of_month = today.replace(day=1)
+        branch_id = self.kwargs.get("branch_id")
 
-        return (
-            Menu.objects.filter(
-                available=True,
-                order_items__order__created__gte=first_day_of_month,
-                order_items__order__created__lte=today,
+        if branch_id:
+            today = timezone.now()
+            first_day_of_month = today.replace(day=1)
+
+            return (
+                Menu.objects.filter(
+                    branch_id=branch_id,
+                    available=True,
+                    order_items__order__created__gte=first_day_of_month,
+                    order_items__order__created__lte=today,
+                )
+                .annotate(total_ordered=Count("order_items"))
+                .order_by("-total_ordered")[:3]
             )
-            .annotate(total_ordered=Count("order_items"))
-            .order_by("-total_ordered")[:3]
-        )
+        return Menu.objects.none()
