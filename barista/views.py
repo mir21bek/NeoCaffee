@@ -4,6 +4,8 @@ from rest_framework import generics
 from rest_framework.response import Response
 from administrator.permissions import IsBarista, IsAdminUser
 from customers.models import BaseUser
+from menu.models import Menu
+from menu.serializers import MenuSerializer
 from order.models import Order
 from drf_yasg.utils import swagger_auto_schema
 from .serializers import (
@@ -55,6 +57,30 @@ class UpdateStatusAPIView(APIView):
             return Response(BaristaOrderSerializers(order).data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class MenuListApiView(generics.ListAPIView):
+    """Представление для получения списка доступных блюд.
+
+    Это представление позволяет только чтение (GET) и требует аутентификации пользователя.
+    """
+
+    serializer_class = MenuSerializer
+    # permission_classes = [IsBarista]
+
+    def get_queryset(self):
+        queryset = Menu.objects.select_related("category", "branch").prefetch_related(
+            "extra_product"
+        )
+        category_slug = self.kwargs.get("category_slug")
+        branch_id = self.kwargs.get("branch_id")
+
+        if category_slug:
+            queryset = queryset.filter(category__slug=category_slug)
+
+        if branch_id:
+            queryset = queryset.filter(branch_id=branch_id)
+        return queryset
 
 
 class BaristaProfileAPIView(generics.ListCreateAPIView):
