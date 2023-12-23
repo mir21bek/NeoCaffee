@@ -2,6 +2,7 @@ from rest_framework import serializers
 from customers.models import BaseUser
 from menu.models import Menu, Category
 from branches.models import Branches
+from .models import Ingredients
 
 
 class AdminLoginSerializer(serializers.ModelSerializer):
@@ -76,10 +77,27 @@ class AdminCategorySerializer(serializers.ModelSerializer):
 """
 
 
+class MenuIngredientsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ingredients
+        fields = ('product', 'quantity_used', 'unit')
+
+
 class MenuCreateSerializer(serializers.ModelSerializer):
+    menu_ingredients = MenuIngredientsSerializer(many=True)
+
     class Meta:
         model = Menu
-        fields = ["name", "description", "category", "image", "price"]
+        fields = ('name', 'description', 'category', 'image', 'menu_ingredients', 'price')
+
+    def create(self, validated_data):
+        ingredients_data = validated_data.pop('menu_ingredients')
+        menu = Menu.objects.create(**validated_data)
+
+        for ingredient_data in ingredients_data:
+            Ingredients.objects.create(menu_item=menu, **ingredient_data)
+
+        return menu
 
 
 """
@@ -97,14 +115,13 @@ class AdminBranchSerializer(serializers.ModelSerializer):
             "address",
             "phone_number",
             "map_link",
-            "monday",
-            "tuesday",
-            "wednesday",
-            "thursday",
-            "friday",
-            "saturday",
-            "sunday",
-            "SHIFT_CHOICES",
+            "monday", "monday_start_time", "monday_end_time",
+            "tuesday", "tuesday_start_time", "tuesday_end_time",
+            "wednesday", "wednesday_start_time", "wednesday_end_time",
+            "thursday", "thursday_start_time", "thursday_end_time",
+            "friday", "friday_start_time", "friday_end_time",
+            "saturday", "saturday_start_time", "saturday_end_time",
+            "sunday", "sunday_start_time", "sunday_end_time",
         )
 
 
@@ -121,18 +138,18 @@ class AdminStaffSerializers(serializers.ModelSerializer):
             "login",
             "password",
             "first_name",
+            "last_name",
             "position",
             "date_of_birth",
             "phone_number",
             "branch",
-            "monday",
-            "tuesday",
-            "wednesday",
-            "thursday",
-            "friday",
-            "saturday",
-            "sunday",
+            "monday", "monday_start_time", "monday_end_time",
+            "tuesday", "tuesday_start_time", "tuesday_end_time",
+            "wednesday", "wednesday_start_time", "wednesday_end_time",
+            "thursday", "thursday_start_time", "thursday_end_time",
+            "friday", "friday_start_time", "friday_end_time",
+            "saturday", "saturday_start_time", "saturday_end_time",
+            "sunday", "sunday_start_time", "sunday_end_time",
             "role",
-            "SHIFT_CHOICES",
         )
         read_only_fields = ("role",)
