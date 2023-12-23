@@ -6,70 +6,36 @@ class Branches(models.Model):
     name = models.CharField(max_length=100, verbose_name="Название филиала")
     address = models.CharField(max_length=255, verbose_name="Адрес")
     phone_number = models.CharField(max_length=13, verbose_name="Телефон номер")
-    date = models.DateField(
-        verbose_name="График работы: Выберите дату", null=True, blank=True
-    )
     map_link = models.URLField(verbose_name="Ссылка на 2GIS", null=True, blank=True)
     image = models.ImageField(upload_to="media/image_branches", verbose_name="Фото")
-    WORK_DAY = "work_day"
-    DAY_OFF = "day_off"
 
-    SHIFT_CHOICES = [
-        (WORK_DAY, "С 08:00 до 00:00"),
-        (DAY_OFF, "Выходной"),
-    ]
-    monday = models.CharField(
-        max_length=20,
-        choices=SHIFT_CHOICES,
-        verbose_name="Выберите смену",
-        null=True,
-        blank=True,
-    )
-    tuesday = models.CharField(
-        max_length=20,
-        choices=SHIFT_CHOICES,
-        verbose_name="Выберите смену",
-        null=True,
-        blank=True,
-    )
-    wednesday = models.CharField(
-        max_length=20,
-        choices=SHIFT_CHOICES,
-        verbose_name="Выберите смену",
-        null=True,
-        blank=True,
-    )
-    thursday = models.CharField(
-        max_length=20,
-        choices=SHIFT_CHOICES,
-        verbose_name="Выберите смену",
-        null=True,
-        blank=True,
-    )
-    friday = models.CharField(
-        max_length=20,
-        choices=SHIFT_CHOICES,
-        verbose_name="Выберите смену",
-        null=True,
-        blank=True,
-    )
-    saturday = models.CharField(
-        max_length=20,
-        choices=SHIFT_CHOICES,
-        verbose_name="Выберите смену",
-        null=True,
-        blank=True,
-    )
-    sunday = models.CharField(
-        max_length=20,
-        choices=SHIFT_CHOICES,
-        verbose_name="Выберите смену",
-        null=True,
-        blank=True,
-    )
+    monday = models.BooleanField(default=False)
+    monday_start_time = models.TimeField(null=True, blank=True)
+    monday_end_time = models.TimeField(null=True, blank=True)
 
-    def __str__(self):
-        return self.name
+    tuesday = models.BooleanField(default=False)
+    tuesday_start_time = models.TimeField(null=True, blank=True)
+    tuesday_end_time = models.TimeField(null=True, blank=True)
+
+    wednesday = models.BooleanField(default=False)
+    wednesday_start_time = models.TimeField(null=True, blank=True)
+    wednesday_end_time = models.TimeField(null=True, blank=True)
+
+    thursday = models.BooleanField(default=False)
+    thursday_start_time = models.TimeField(null=True, blank=True)
+    thursday_end_time = models.TimeField(null=True, blank=True)
+
+    friday = models.BooleanField(default=False)
+    friday_start_time = models.TimeField(null=True, blank=True)
+    friday_end_time = models.TimeField(null=True, blank=True)
+
+    saturday = models.BooleanField(default=False)
+    saturday_start_time = models.TimeField(null=True, blank=True)
+    saturday_end_time = models.TimeField(null=True, blank=True)
+
+    sunday = models.BooleanField(default=False)
+    sunday_start_time = models.TimeField(null=True, blank=True)
+    sunday_end_time = models.TimeField(null=True, blank=True)
 
 
 class CoffeeShop(models.Model):

@@ -26,65 +26,6 @@ class BaseUser(AbstractBaseUser, PermissionsMixin):
         blank=True,
         null=True,
     )
-    DAY_SHIFT = "day_shift"
-    NIGHT_SHIFT = "night_shift"
-    DAY_OFF = "day_off"
-
-    SHIFT_CHOICES = [
-        (DAY_SHIFT, "Дневная смена с 10:00 до 17:00"),
-        (NIGHT_SHIFT, "Вечерняя смена с 17:00 до 23:00"),
-        (DAY_OFF, "Выходной"),
-    ]
-    date = models.DateField(verbose_name="График работы", null=True, blank=True)
-    monday = models.CharField(
-        max_length=20,
-        choices=SHIFT_CHOICES,
-        verbose_name="Выберите смену",
-        null=True,
-        blank=True,
-    )
-    tuesday = models.CharField(
-        max_length=20,
-        choices=SHIFT_CHOICES,
-        verbose_name="Выберите смену",
-        null=True,
-        blank=True,
-    )
-    wednesday = models.CharField(
-        max_length=20,
-        choices=SHIFT_CHOICES,
-        verbose_name="Выберите смену",
-        null=True,
-        blank=True,
-    )
-    thursday = models.CharField(
-        max_length=20,
-        choices=SHIFT_CHOICES,
-        verbose_name="Выберите смену",
-        null=True,
-        blank=True,
-    )
-    friday = models.CharField(
-        max_length=20,
-        choices=SHIFT_CHOICES,
-        verbose_name="Выберите смену",
-        null=True,
-        blank=True,
-    )
-    saturday = models.CharField(
-        max_length=20,
-        choices=SHIFT_CHOICES,
-        verbose_name="Выберите смену",
-        null=True,
-        blank=True,
-    )
-    sunday = models.CharField(
-        max_length=20,
-        choices=SHIFT_CHOICES,
-        verbose_name="Выберите смену",
-        null=True,
-        blank=True,
-    )
     branch = models.ForeignKey(
         Branches, on_delete=models.SET_NULL, null=True, blank=True
     )
@@ -95,6 +36,34 @@ class BaseUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+
+    monday = models.BooleanField(default=False)
+    monday_start_time = models.TimeField(null=True, blank=True)
+    monday_end_time = models.TimeField(null=True, blank=True)
+
+    tuesday = models.BooleanField(default=False)
+    tuesday_start_time = models.TimeField(null=True, blank=True)
+    tuesday_end_time = models.TimeField(null=True, blank=True)
+
+    wednesday = models.BooleanField(default=False)
+    wednesday_start_time = models.TimeField(null=True, blank=True)
+    wednesday_end_time = models.TimeField(null=True, blank=True)
+
+    thursday = models.BooleanField(default=False)
+    thursday_start_time = models.TimeField(null=True, blank=True)
+    thursday_end_time = models.TimeField(null=True, blank=True)
+
+    friday = models.BooleanField(default=False)
+    friday_start_time = models.TimeField(null=True, blank=True)
+    friday_end_time = models.TimeField(null=True, blank=True)
+
+    saturday = models.BooleanField(default=False)
+    saturday_start_time = models.TimeField(null=True, blank=True)
+    saturday_end_time = models.TimeField(null=True, blank=True)
+
+    sunday = models.BooleanField(default=False)
+    sunday_start_time = models.TimeField(null=True, blank=True)
+    sunday_end_time = models.TimeField(null=True, blank=True)
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = []
