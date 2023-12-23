@@ -31,6 +31,7 @@ class CategoryApiView(generics.ListAPIView):
 
 class MenuApiView(generics.ListAPIView):
     serializer_class = MenuSerializer
+    permission_classes = [IsClientUser]
 
     def get_queryset(self):
         queryset = Menu.objects.select_related("category", "branch").prefetch_related("extra_product")

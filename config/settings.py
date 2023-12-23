@@ -24,8 +24,9 @@ ALLOWED_HOSTS = [
     "0.0.0.0",
     "localhost",
     "127.0.0.1",
-    "www.ishak-backender.org.kg",
-    "ishak-backender.org.kg",
+    "www.neo-cafe.org.kg",
+    "neo-cafe.org.kg",
+    "138.197.184.234",
 ]
 
 AUTH_USER_MODEL = "customers.BaseUser"
@@ -157,8 +158,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://www.ishak-backender.org.kg",
-    "https://www.ishak-backender.org.kg",
+    "http://www.neo-cafe.org.kg",
+    "https://www.neo-cafe.org.kg",
 ]
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -188,7 +189,7 @@ TWILIO_AUTH_TOKEN = config("TWILIO_AUTH_TOKEN")
 TWILIO_SERVER_SID = config("TWILIO_SERVER_SID")
 
 
-CSRF_TRUSTED_ORIGINS = ["https://ishak-backender.org.kg"]
+CSRF_TRUSTED_ORIGINS = ["https://neo-cafe.org.kg"]
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
