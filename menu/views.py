@@ -33,7 +33,9 @@ class MenuApiView(generics.ListAPIView):
     serializer_class = MenuSerializer
 
     def get_queryset(self):
-        queryset = Menu.objects.select_related("category", "branch").prefetch_related("extra_product")
+        queryset = Menu.objects.select_related("category", "branch").prefetch_related(
+            "extra_product"
+        )
         branch_id = self.kwargs.get("branch_id")
 
         if branch_id:
@@ -51,7 +53,9 @@ class MenuListApiView(generics.ListAPIView):
     permission_classes = [IsClientUser]
 
     def get_queryset(self):
-        queryset = Menu.objects.select_related("category", "branch").prefetch_related("extra_product")
+        queryset = Menu.objects.select_related("category", "branch").prefetch_related(
+            "extra_product"
+        )
         category_slug = self.kwargs.get("category_slug")
         branch_id = self.kwargs.get("branch_id")
 

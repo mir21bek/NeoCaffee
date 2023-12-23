@@ -5,7 +5,7 @@ from .serializers import OrderSerializer, OrderItemSerializer
 from .models import Order
 
 
-class OrderCreateAPIView(generics.CreateAPIView):
+class OrderCreateAPIView(generics.ListAPIView):
     serializer_class = OrderItemSerializer
     permission_classes = [IsClientUser]
 

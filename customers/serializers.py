@@ -5,9 +5,6 @@ from order.serializers import OrderSerializer
 from .models import BaseUser
 
 
-from django.contrib.auth.hashers import make_password
-
-
 class CustomerRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = BaseUser
@@ -38,9 +35,29 @@ class CustomerCheckOTPSerializer(serializers.ModelSerializer):
         fields = ["otp"]
 
 
+class OrderItemSerializer(serializers.Serializer):
+    order = serializers.IntegerField()
+    menu = serializers.DictField()
+    menu_quantity = serializers.IntegerField()
+    extra_product = serializers.CharField(allow_null=True)
+    extra_product_quantity = serializers.IntegerField()
+    bonuses_used = serializers.CharField()
+    cashback = serializers.FloatField()
+
+
+class ProfileOrderSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    status = serializers.CharField()
+    user = serializers.IntegerField()
+    branch = serializers.DictField()
+    items = OrderItemSerializer(many=True)
+    created = serializers.DateTimeField()
+    get_total_cost = serializers.FloatField()
+
+
 class CustomerProfileSerializer(serializers.ModelSerializer):
-    active_orders = serializers.SerializerMethodField()
-    completed_orders = serializers.SerializerMethodField()
+    active_orders = OrderSerializer(many=True)
+    completed_orders = OrderSerializer(many=True)
 
     class Meta:
         model = BaseUser

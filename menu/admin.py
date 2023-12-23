@@ -6,8 +6,8 @@ from django.contrib.admin import SimpleListFilter
 
 
 class BranchFilter(SimpleListFilter):
-    title = _('branch')
-    parameter_name = 'branch'
+    title = _("branch")
+    parameter_name = "branch"
 
     def lookups(self, request, model_admin):
         branches = set([c.branch for c in model_admin.model.objects.all()])

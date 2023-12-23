@@ -1,4 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status, permissions, viewsets
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
