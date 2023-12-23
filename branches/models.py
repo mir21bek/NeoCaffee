@@ -37,6 +37,9 @@ class Branches(models.Model):
     sunday_start_time = models.TimeField(null=True, blank=True)
     sunday_end_time = models.TimeField(null=True, blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class CoffeeShop(models.Model):
     branch = models.ForeignKey(
