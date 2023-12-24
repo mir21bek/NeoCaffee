@@ -17,17 +17,11 @@ class AdminLoginView(generics.GenericAPIView):
         try:
             user = BaseUser.objects.get(login=login)
 
-            if not user.is_verify:
-                if user.position == "admin":
-                    otp_service = OTPService()
-                    otp_service.generate_and_send_otp(user)
-
-                return Response(
-                    {
-                        "message": "Verification code has been sent to your phone number."
-                    },
-                    status=status.HTTP_200_OK,
-                )
+            if user.is_verify:
+                if user.role == "admin":
+                    return Response({'message': f'Welcome {user}'})
+                else:
+                    return Response({'message': 'User is not an admin.'})
 
         except ObjectDoesNotExist:
             return Response(
