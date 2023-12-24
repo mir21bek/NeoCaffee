@@ -52,12 +52,26 @@ class StaffProfileSerializer(serializers.ModelSerializer):
             "position",
             "branch",
             "monday",
-            "monday",
+            "monday_start_time",
+            "monday_end_time",
+            "tuesday",
+            "tuesday_start_time",
+            "tuesday_end_time",
             "wednesday",
+            "wednesday_start_time",
+            "wednesday_end_time",
             "thursday",
+            "thursday_start_time",
+            "thursday_end_time",
             "friday",
+            "friday_start_time",
+            "friday_end_time",
             "saturday",
+            "saturday_start_time",
+            "saturday_end_time",
             "sunday",
+            "sunday_start_time",
+            "sunday_end_time",
         )
 
 
@@ -81,7 +95,7 @@ class MenuIngredientsSerializer(serializers.ModelSerializer):
     product = serializers.CharField(source='product.name')
     class Meta:
         model = Ingredients
-        fields = ('product', 'quantity_used', 'unit')
+        fields = ("product", "quantity_used", "unit")
 
 
 class MenuCreateSerializer(serializers.ModelSerializer):
@@ -90,10 +104,17 @@ class MenuCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Menu
-        fields = ('name', 'description', 'category', 'image', 'menu_ingredients', 'price')
+        fields = (
+            "name",
+            "description",
+            "category",
+            "image",
+            "menu_ingredients",
+            "price",
+        )
 
     def create(self, validated_data):
-        ingredients_data = validated_data.pop('menu_ingredients')
+        ingredients_data = validated_data.pop("menu_ingredients")
         menu = Menu.objects.create(**validated_data)
 
         for ingredient_data in ingredients_data:
@@ -117,13 +138,27 @@ class AdminBranchSerializer(serializers.ModelSerializer):
             "address",
             "phone_number",
             "map_link",
-            "monday", "monday_start_time", "monday_end_time",
-            "tuesday", "tuesday_start_time", "tuesday_end_time",
-            "wednesday", "wednesday_start_time", "wednesday_end_time",
-            "thursday", "thursday_start_time", "thursday_end_time",
-            "friday", "friday_start_time", "friday_end_time",
-            "saturday", "saturday_start_time", "saturday_end_time",
-            "sunday", "sunday_start_time", "sunday_end_time",
+            "monday",
+            "monday_start_time",
+            "monday_end_time",
+            "tuesday",
+            "tuesday_start_time",
+            "tuesday_end_time",
+            "wednesday",
+            "wednesday_start_time",
+            "wednesday_end_time",
+            "thursday",
+            "thursday_start_time",
+            "thursday_end_time",
+            "friday",
+            "friday_start_time",
+            "friday_end_time",
+            "saturday",
+            "saturday_start_time",
+            "saturday_end_time",
+            "sunday",
+            "sunday_start_time",
+            "sunday_end_time",
         )
 
 
@@ -145,13 +180,27 @@ class AdminStaffSerializers(serializers.ModelSerializer):
             "date_of_birth",
             "phone_number",
             "branch",
-            "monday", "monday_start_time", "monday_end_time",
-            "tuesday", "tuesday_start_time", "tuesday_end_time",
-            "wednesday", "wednesday_start_time", "wednesday_end_time",
-            "thursday", "thursday_start_time", "thursday_end_time",
-            "friday", "friday_start_time", "friday_end_time",
-            "saturday", "saturday_start_time", "saturday_end_time",
-            "sunday", "sunday_start_time", "sunday_end_time",
+            "monday",
+            "monday_start_time",
+            "monday_end_time",
+            "tuesday",
+            "tuesday_start_time",
+            "tuesday_end_time",
+            "wednesday",
+            "wednesday_start_time",
+            "wednesday_end_time",
+            "thursday",
+            "thursday_start_time",
+            "thursday_end_time",
+            "friday",
+            "friday_start_time",
+            "friday_end_time",
+            "saturday",
+            "saturday_start_time",
+            "saturday_end_time",
+            "sunday",
+            "sunday_start_time",
+            "sunday_end_time",
             "role",
         )
         read_only_fields = ("role",)

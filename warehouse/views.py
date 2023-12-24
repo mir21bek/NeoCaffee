@@ -1,4 +1,6 @@
 from rest_framework import generics
+
+from administrator.permissions import IsAdminUser
 from .models import InventoryItem
 from .serializers import InventoryItemSerializer
 from branches.models import Branches
@@ -7,6 +9,7 @@ from django.shortcuts import get_object_or_404
 
 class InventoryItemListCreateView(generics.ListCreateAPIView):
     serializer_class = InventoryItemSerializer
+    permission_classes = [IsAdminUser]
 
     def get_queryset(self):
         branch_id = self.kwargs["branch_id"]
@@ -22,6 +25,7 @@ class InventoryItemListCreateView(generics.ListCreateAPIView):
 class InventoryItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = InventoryItem.objects.all()
     serializer_class = InventoryItemSerializer
+    permission_classes = [IsAdminUser]
 
     def get_object(self):
         branch_id = self.kwargs["branch_id"]
