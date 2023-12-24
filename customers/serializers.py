@@ -56,8 +56,8 @@ class ProfileOrderSerializer(serializers.Serializer):
 
 
 class CustomerProfileSerializer(serializers.ModelSerializer):
-    active_orders = OrderSerializer(many=True)
-    completed_orders = OrderSerializer(many=True)
+    active_orders = serializers.SerializerMethodField()
+    completed_orders = serializers.SerializerMethodField()
 
     class Meta:
         model = BaseUser
