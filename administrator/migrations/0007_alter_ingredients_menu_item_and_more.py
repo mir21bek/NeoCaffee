@@ -5,21 +5,24 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('warehouse', '0004_inventoryitem_is_running_out_and_more'),
-        ('menu', '0014_alter_category_slug'),
-        ('administrator', '0006_initial'),
+        ("warehouse", "0004_inventoryitem_is_running_out_and_more"),
+        ("menu", "0014_alter_category_slug"),
+        ("administrator", "0006_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ingredients',
-            name='menu_item',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='menu_ingredients', to='menu.menu'),
+            model_name="ingredients",
+            name="menu_item",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="menu_ingredients",
+                to="menu.menu",
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='ingredients',
-            unique_together={('menu_item', 'product')},
+            name="ingredients",
+            unique_together={("menu_item", "product")},
         ),
     ]

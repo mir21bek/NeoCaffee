@@ -5,24 +5,54 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('menu', '0014_alter_category_slug'),
-        ('warehouse', '0004_inventoryitem_is_running_out_and_more'),
-        ('administrator', '0005_delete_menuingredient'),
+        ("menu", "0014_alter_category_slug"),
+        ("warehouse", "0004_inventoryitem_is_running_out_and_more"),
+        ("administrator", "0005_delete_menuingredient"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Ingredients',
+            name="Ingredients",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('quantity_used', models.PositiveIntegerField()),
-                ('unit', models.CharField(choices=[('kg', 'кг'), ('g', 'г'), ('l', 'л'), ('ml', 'мл'), ('unit', 'шт')], max_length=5)),
-                ('menu_item', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='menu.menu')),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='warehouse.inventoryitem')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("quantity_used", models.PositiveIntegerField()),
+                (
+                    "unit",
+                    models.CharField(
+                        choices=[
+                            ("kg", "кг"),
+                            ("g", "г"),
+                            ("l", "л"),
+                            ("ml", "мл"),
+                            ("unit", "шт"),
+                        ],
+                        max_length=5,
+                    ),
+                ),
+                (
+                    "menu_item",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="menu.menu"
+                    ),
+                ),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="warehouse.inventoryitem",
+                    ),
+                ),
             ],
         ),
     ]

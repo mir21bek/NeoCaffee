@@ -27,7 +27,11 @@ urlpatterns = [
     path("category/", CategoryListCreateView.as_view(), name="category-create"),
     path("category/<int:pk>/", CategoryDeleteView.as_view(), name="category-delete"),
     path("menu/create/", MenuCreateView.as_view(), name="menu-create"),
-    path("menu/<int:branch_id>/", MenuWithIngredientsView.as_view(), name="menu-list-by-branch_id"),
+    path(
+        "menu/<int:branch_id>/",
+        MenuWithIngredientsView.as_view(),
+        name="menu-list-by-branch_id",
+    ),
     path("menu/<int:pk>/", MenuDetailEditDeleteView.as_view(), name="menu-edit-delete"),
     path("branches/", BranchListCreateView.as_view(), name="branch-list-create"),
     path("branches/<int:id>/", BranchDetailView.as_view(), name="branch-detail"),
