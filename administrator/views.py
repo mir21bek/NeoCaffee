@@ -1,6 +1,8 @@
 from rest_framework import status, generics, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from .permissions import IsAdminUser
 from customers.services import OTPService
 from rest_framework.permissions import IsAuthenticated
@@ -19,7 +21,11 @@ class AdminLoginView(generics.GenericAPIView):
 
             if user.is_verify:
                 if user.role == "admin":
-                    return Response({'message': f'Welcome {user}'})
+                    refresh = RefreshToken.for_user(user)
+                    return Response(
+                        {"refresh": str(refresh), "access": str(refresh.access_token)},
+                        status=status.HTTP_200_OK,
+                    )
                 else:
                     return Response({'message': 'User is not an admin.'})
 
@@ -143,12 +149,12 @@ class CategoryDeleteView(generics.DestroyAPIView):
 class MenuCreateView(generics.CreateAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuCreateSerializer
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
 
 
 class MenuWithIngredientsView(generics.ListAPIView):
     serializer_class = MenuCreateSerializer
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
 
     def get_queryset(self):
         branch_id = self.kwargs["branch_id"]
@@ -159,7 +165,7 @@ class MenuDetailEditDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuCreateSerializer
     lookup_field = "pk"
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
 
 
 """
@@ -170,14 +176,14 @@ class MenuDetailEditDeleteView(generics.RetrieveUpdateDestroyAPIView):
 class BranchListCreateView(generics.ListCreateAPIView):
     queryset = Branches.objects.all()
     serializer_class = AdminBranchSerializer
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
 
 
 class BranchDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Branches.objects.all()
     serializer_class = AdminBranchSerializer
     lookup_field = "id"
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
 
 
 """
@@ -187,7 +193,7 @@ class BranchDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class StaffCreateView(generics.CreateAPIView):
     serializer_class = AdminStaffSerializers
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
 
     def perform_create(self, serializer):
         position = self.request.data.get("position", None)
@@ -202,7 +208,7 @@ class StaffCreateView(generics.CreateAPIView):
 
 class StaffByBranchView(generics.ListAPIView):
     serializer_class = AdminStaffSerializers
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
 
     def get_queryset(self):
         branch_id = self.kwargs["branch_id"]
@@ -216,4 +222,4 @@ class StaffDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AdminStaffSerializers
     queryset = BaseUser.objects.filter(role__in=["waiter", "barista"])
     lookup_field = "id"
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
