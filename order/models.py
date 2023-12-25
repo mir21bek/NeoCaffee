@@ -1,4 +1,3 @@
-import uuid
 from decimal import Decimal
 from django.db import models
 from django.conf import settings
@@ -11,6 +10,9 @@ class Order(models.Model):
         ("takeaway", "На вынос"),
         ("inplace", "В заведении"),
     ]
+    order_type = models.CharField(
+        max_length=20, choices=TYPE_CHOICES, default="takeaway"
+    )
 
     STATUS_CHOICES = [
         ("new", "Новый"),
@@ -21,26 +23,39 @@ class Order(models.Model):
     ]
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="new")
-    order_type = models.CharField(
-        max_length=20, choices=TYPE_CHOICES, default="takeaway"
-    )
-    custom_order_id = models.CharField(
-        max_length=255, editable=False, unique=True, null=True, blank=True
-    )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         related_name="customer_orders",
         null=True,
     )
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     branch = models.ForeignKey(Branches, on_delete=models.SET_NULL, null=True)
+    bonuses_used = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
+        if not self.pk:
+            super().save(*args, **kwargs)
+        self.total_price = (
+            sum(item.get_cost() for item in self.items.all()) - self.bonuses_used
+        )
         super().save(*args, **kwargs)
-        self.custom_order_id = f"M-{self.id}"
-        super().save(update_fields=["custom_order_id"])
+
+    def apply_bonuses(self, bonuses_amount):
+        if self.user.bonuses < bonuses_amount:
+            raise ValueError("Недостаточно бонусов")
+        self.user.bonuses -= bonuses_amount
+        self.bonuses_used = bonuses_amount
+        self.user.save()
+
+    def apply_cashback(self):
+        if self.status == "completed" and self.user and self.user.role == "client":
+            cashback = self.total_price * Decimal("0.05")
+            self.user.bonuses += cashback
+            self.user.save()
+            return cashback
+        return Decimal("0.00")
 
     def set_in_process(self):
         if self.status == "new":
@@ -70,9 +85,6 @@ class Order(models.Model):
     def __str__(self):
         return f"Order {self.id}"
 
-    def get_total_cost(self):
-        return sum(item.get_cost() for item in self.items.all())
-
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
@@ -86,34 +98,21 @@ class OrderItem(models.Model):
         related_name="extra_order",
     )
     extra_product_quantity = models.PositiveIntegerField(default=0)
-    bonuses_used = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
-    def __str__(self):
-        return f"OrderItem {self.id}"
-
-    def apply_bonuses(self, bonuses_amount):
-        if self.order.user.bonuses < bonuses_amount:
-            raise ValueError("Недостаточно бонусов")
-        self.order.user.bonuses -= bonuses_amount
-        self.bonuses_used = bonuses_amount
-        self.order.user.save()
-        self.save()
 
     def get_cost(self):
-        menu_cost = max(Decimal("0"), self.menu.price) * self.menu_quantity
+        menu_cost = (
+            max(Decimal("0"), self.menu.price) * self.menu_quantity
+            if self.menu
+            else Decimal("0")
+        )
         extra_cost = (
             max(Decimal("0"), self.extra_product.price) * self.extra_product_quantity
             if self.extra_product
             else Decimal("0")
         )
-        return menu_cost + extra_cost - self.bonuses_used
+        return menu_cost + extra_cost
 
-    def apply_cashback(self):
-        if self.order.status == "completed":
-            total_cost = self.get_cost()
-            cashback = total_cost * Decimal("0.05")
-            if self.order.user and self.order.user.role == "client":
-                self.order.user.bonuses += cashback
-                self.order.user.save()
-            return cashback
-        return Decimal("0.00")
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.order:
+            self.order.save()

@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "barista.apps.BaristaConfig",
+    "notifications.apps.NotificationsConfig",
+    "channels",
 ]
 
 
@@ -216,3 +218,8 @@ CORS_ALLOW_METHODS = [
 
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_AGE = 1209600
+
+
+CHANNEL_LAYERS = {
+    "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"},
+}

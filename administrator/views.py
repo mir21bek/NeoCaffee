@@ -27,7 +27,7 @@ class AdminLoginView(generics.GenericAPIView):
                         status=status.HTTP_200_OK,
                     )
                 else:
-                    return Response({'message': 'User is not an admin.'})
+                    return Response({"message": "User is not an admin."})
 
         except ObjectDoesNotExist:
             return Response(

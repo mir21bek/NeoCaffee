@@ -1,13 +1,13 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import OrderItem
+from .models import Order
 
 
-@receiver(post_save, sender=OrderItem)
+@receiver(post_save, sender=Order)
 def order_post_save(sender, instance, created, **kwargs):
     if (
-        instance.order.status == "completed"
-        and instance.order.user
-        and instance.order.user.role == "client"
+        instance.status == "completed"
+        and instance.user
+        and instance.user.role == "client"
     ):
         instance.apply_cashback()

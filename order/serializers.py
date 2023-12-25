@@ -5,57 +5,52 @@ from .models import Order, OrderItem
 from branches.models import Branches
 
 
-class OrderBranchSerializer(serializers.ModelSerializer):
+class MTOSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
     class Meta:
-        model = Branches
-        fields = ("image", "name")
+        model = OrderItem
+        fields = [
+            "id",
+            "menu",
+            "menu_quantity",
+            "extra_product",
+            "extra_product_quantity",
+        ]
 
 
-class OrderMenuSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Menu
-        fields = ("image", "name", "price")
-
-
-class OrderExtraItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ExtraItem
-        fields = ("name", "price")
-
-
-class OrderItemSerializer(serializers.ModelSerializer):
-    menu = OrderMenuSerializer(read_only=True)
-    extra_product = OrderExtraItemSerializer(read_only=True)
+class OrderSerializer(serializers.ModelSerializer):
+    order_type = serializers.CharField(read_only=True)
+    status = serializers.CharField(read_only=True)
+    total_price = serializers.IntegerField(min_value=0, read_only=True)
+    branch = serializers.CharField(read_only=True)
+    bonuses_used = serializers.IntegerField(min_value=0, read_only=True)
     cashback = serializers.SerializerMethodField()
+    items = MTOSerializer(many=True)
 
     def get_cashback(self, obj):
         return obj.apply_cashback()
 
     class Meta:
-        model = OrderItem
-        fields = (
-            "order",
-            "menu",
-            "menu_quantity",
-            "extra_product",
-            "extra_product_quantity",
-            "bonuses_used",
-            "cashback",
-        )
-
-
-class OrderSerializer(serializers.ModelSerializer):
-    branch = OrderBranchSerializer(read_only=True)
-    items = OrderItemSerializer(many=True)
-
-    class Meta:
         model = Order
         fields = [
             "id",
+            "order_type",
             "status",
-            "user",
             "branch",
-            "items",
+            "user",
+            "bonuses_used",
             "created",
-            "get_total_cost",
+            "total_price",
+            "cashback",
+            "items",
         ]
+
+    def create(self, validated_data):
+        mto_data = validated_data.pop("MTO")
+        order = Order.objects.create(**validated_data)
+
+        for mto in mto_data:
+            drop_id = validated_data.pop("id")
+            OrderItem.objects.create(order=order, **mto)
+            return order
