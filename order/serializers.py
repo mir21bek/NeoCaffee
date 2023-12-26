@@ -20,11 +20,6 @@ class MTOSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    order_type = serializers.CharField(read_only=True)
-    status = serializers.CharField(read_only=True)
-    total_price = serializers.IntegerField(min_value=0, read_only=True)
-    branch = serializers.CharField(read_only=True)
-    bonuses_used = serializers.IntegerField(min_value=0, read_only=True)
     cashback = serializers.SerializerMethodField()
     items = MTOSerializer(many=True)
 
@@ -47,10 +42,10 @@ class OrderSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        mto_data = validated_data.pop("items")
+        items_data = validated_data.pop("items", [])
         order = Order.objects.create(**validated_data)
 
-        for mto in mto_data:
-            drop_id = validated_data.pop("id")
-            OrderItem.objects.create(order=order, **mto)
-            return order
+        for item in items_data:
+            OrderItem.objects.create(order=order, **item)
+        order.save()
+        return order
