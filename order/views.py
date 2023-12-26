@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from administrator.permissions import IsClientUser
-from .serializers import OrderSerializer
+from .serializers import OrderSerializer, OrderHistorySerializer
 from .models import Order, OrderItem
 
 
@@ -18,7 +18,7 @@ class OrderCreateAPIView(generics.CreateAPIView):
 class OrderHistory(APIView):
     def get(self, request, *args, **kwargs):
         orders = Order.objects.all()
-        serializer = OrderSerializer(orders, many=True)
+        serializer = OrderHistorySerializer(orders, many=True)
         return Response(serializer.data)
 
     # queryset = OrderItem.objects.all()

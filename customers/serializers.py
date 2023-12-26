@@ -1,7 +1,7 @@
 # serializers.py
 
 from rest_framework import serializers
-from order.serializers import OrderSerializer
+from order.serializers import OrderSerializer, OrderHistorySerializer
 from .models import BaseUser
 
 
@@ -74,12 +74,12 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
     def get_active_orders(self, obj):
         active_statuses = ["new", "in_process"]
         orders = obj.customer_orders.filter(status__in=active_statuses)
-        return OrderSerializer(orders, many=True).data
+        return OrderHistorySerializer(orders, many=True).data
 
     def get_completed_orders(self, obj):
         completed_statuses = ["done", "completed"]
         orders = obj.customer_orders.filter(status__in=completed_statuses)
-        return OrderSerializer(orders, many=True).data
+        return OrderHistorySerializer(orders, many=True).data
 
     def update(self, instance, validated_data):
         if instance.role == "client":

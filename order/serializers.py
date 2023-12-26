@@ -1,20 +1,33 @@
 from rest_framework import serializers
-
+from branches.models import Branches
 from menu.models import Menu, ExtraItem
 from .models import Order, OrderItem
-from branches.models import Branches
+
+
+class OrderMenuHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Menu
+        fields = ['image', 'name', 'description', 'price']
+
+
+class OrderExtraProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExtraItem
+        fields = ['name', 'price']
 
 
 class MTOSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
+    menu_detail = OrderMenuHistorySerializer(source='menu', read_only=True)
+    extra_product_detail = OrderExtraProductSerializer(source='extra_product', read_only=True)
 
     class Meta:
         model = OrderItem
         fields = [
-            "id",
             "menu",
+            "menu_detail",
             "menu_quantity",
             "extra_product",
+            "extra_product_detail",
             "extra_product_quantity",
         ]
 
@@ -49,3 +62,22 @@ class OrderSerializer(serializers.ModelSerializer):
             OrderItem.objects.create(order=order, **item)
         order.save()
         return order
+
+
+class OrderBranchInHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Branches
+        fields = ('image', 'name')
+
+
+class OrderHistorySerializer(serializers.ModelSerializer):
+    branch = OrderBranchInHistorySerializer()
+    items = MTOSerializer(many=True)
+
+    class Meta:
+        model = Order
+        fields = [
+            "branch",
+            "created",
+            "items",
+        ]
