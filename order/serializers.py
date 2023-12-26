@@ -47,7 +47,7 @@ class OrderSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        mto_data = validated_data.pop("MTO")
+        mto_data = validated_data.pop("items")
         order = Order.objects.create(**validated_data)
 
         for mto in mto_data:
