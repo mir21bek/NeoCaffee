@@ -9,5 +9,7 @@ def order_post_save(sender, instance, created, **kwargs):
         instance.status == "completed"
         and instance.user
         and instance.user.role == "client"
+        and not created
+        and "status" in instance.__dirty_fields__
     ):
         instance.apply_cashback()
