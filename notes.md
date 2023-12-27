@@ -1,1 +1,1 @@
-uvicorn config.asgi:application --port 8000 --workers 4 --log-level debug --reload
+uvicorn config.asgi:application --port 8080 --workers 4 --log-level debug --reload

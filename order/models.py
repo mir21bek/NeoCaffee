@@ -34,13 +34,25 @@ class Order(models.Model):
     bonuses_used = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     created = models.DateTimeField(auto_now_add=True)
 
+    _prev_status = None
+
+    def __init__(self, *args, **kwargs):
+        super(Order, self).__init__(*args, **kwargs)
+        self._prev_status = self.status
+
     def save(self, *args, **kwargs):
-        if not self.pk:
-            super().save(*args, **kwargs)
-        self.total_price = (
-            sum(item.get_cost() for item in self.items.all()) - self.bonuses_used
-        )
+        if self.pk is not None and not self._prev_status:
+            self._prev_status = Order.objects.get(pk=self.pk).status
+
         super().save(*args, **kwargs)
+
+        if not self.pk:
+            self.total_price = (
+                    sum(item.get_cost() for item in self.items.all()) - self.bonuses_used
+            )
+            super().save(*args, **kwargs)
+
+        self._prev_status = self.status
 
     def apply_bonuses(self, bonuses_amount):
         if self.user.bonuses < bonuses_amount:

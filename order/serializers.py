@@ -17,16 +17,16 @@ class OrderExtraProductSerializer(serializers.ModelSerializer):
 
 
 class MTOSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
     menu_detail = OrderMenuHistorySerializer(source='menu', read_only=True)
     extra_product_detail = OrderExtraProductSerializer(source='extra_product', read_only=True)
 
     class Meta:
         model = OrderItem
         fields = [
-            "menu",
+            "id",
             "menu_detail",
             "menu_quantity",
-            "extra_product",
             "extra_product_detail",
             "extra_product_quantity",
         ]
@@ -60,7 +60,6 @@ class OrderSerializer(serializers.ModelSerializer):
 
         for item in items_data:
             OrderItem.objects.create(order=order, **item)
-        order.save()
         return order
 
 

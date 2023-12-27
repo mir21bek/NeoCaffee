@@ -10,6 +10,6 @@ def order_post_save(sender, instance, created, **kwargs):
         and instance.user
         and instance.user.role == "client"
         and not created
-        and "status" in instance.__dirty_fields__
+        and instance._prev_status != instance.status
     ):
         instance.apply_cashback()
