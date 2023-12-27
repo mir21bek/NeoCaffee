@@ -13,3 +13,4 @@ def order_post_save(sender, instance, created, **kwargs):
         and instance._prev_status != instance.status
     ):
         instance.apply_cashback()
+
