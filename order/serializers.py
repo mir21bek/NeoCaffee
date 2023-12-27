@@ -60,7 +60,6 @@ class OrderSerializer(serializers.ModelSerializer):
 
         for item in items_data:
             OrderItem.objects.create(order=order, **item)
-        order.save()
         return order
 
 

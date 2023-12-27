@@ -12,7 +12,7 @@ class OrderCreateAPIView(generics.CreateAPIView):
     permission_classes = [IsClientUser]
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.order.user)
+        serializer.save(user=self.request.user)
 
 
 class OrderHistory(APIView):
