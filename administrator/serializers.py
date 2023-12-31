@@ -40,9 +40,12 @@ class BaristaLoginSerializer(serializers.ModelSerializer):
 
 
 class StaffProfileSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = BaseUser
         fields = (
+            "id",
             "login",
             "password",
             "phone_number",
