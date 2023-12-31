@@ -15,7 +15,6 @@ class InventoryItem(models.Model):
     CATEGORY_CHOICES = [
         ("ready_products", "Готовые продукты"),
         ("raw_materials", "Сырье"),
-        ("running_out", "Заканчивающиеся продукты"),
     ]
 
     name = models.CharField(max_length=100, verbose_name="Наименование")
@@ -44,11 +43,17 @@ class InventoryItem(models.Model):
     def __str__(self):
         return f"{self.name} ({self.get_category_display()}) {self.branch}"
 
+    def decrease_stock(self, amount):
+        """
+        Уменьшить количество товара на складе.
+        """
+        self.quantity -= amount
+        self.save()
 
-@receiver(pre_save, sender=InventoryItem)
-def check_running_out(sender, instance, **kwargs):
-    if instance.quantity <= instance.limit:
-        instance.category = "running_out"
-        instance.is_running_out = True
-    else:
-        instance.is_running_out = False
+    def save(self, *args, **kwargs):
+        if self.quantity <= self.limit:
+            self.is_running_out = True
+        else:
+            self.is_running_out = False
+
+        super().save(*args, **kwargs)

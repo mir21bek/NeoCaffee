@@ -37,7 +37,7 @@ urlpatterns = [
     path("branches/<int:id>/", BranchDetailView.as_view(), name="branch-detail"),
     path("staff/create", StaffCreateView.as_view(), name="staff-create"),
     path(
-        "staff/branch/<int:branch_id>/", StaffByBranchView.as_view(), name="staff-list"
+        "staff/list", StaffByBranchView.as_view(), name="staff-list"
     ),
     path("staff/<int:id>/", StaffDetailView.as_view(), name="employee-detail"),
 ]
