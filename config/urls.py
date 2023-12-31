@@ -39,7 +39,5 @@ urlpatterns = [
     path("api-order/", include("order.urls")),
     path("api-warehouse/", include("warehouse.urls")),
     path("api-barista/", include("barista.urls")),
+    path("__debug__/", include("debug_toolbar.urls"))
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

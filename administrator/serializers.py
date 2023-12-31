@@ -92,7 +92,8 @@ class AdminCategorySerializer(serializers.ModelSerializer):
 
 
 class MenuIngredientsSerializer(serializers.ModelSerializer):
-    product = serializers.CharField(source='product.name')
+    product = serializers.CharField(source="product.name")
+
     class Meta:
         model = Ingredients
         fields = ("product", "quantity_used", "unit")
@@ -100,7 +101,7 @@ class MenuIngredientsSerializer(serializers.ModelSerializer):
 
 class MenuCreateSerializer(serializers.ModelSerializer):
     menu_ingredients = MenuIngredientsSerializer(many=True)
-    category = serializers.CharField(source='category.name')
+    category = serializers.CharField(source="category.name")
 
     class Meta:
         model = Menu

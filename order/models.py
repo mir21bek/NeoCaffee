@@ -1,4 +1,8 @@
+import json
 from decimal import Decimal
+
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.db import models
 from django.conf import settings
 from menu.models import Menu, ExtraItem
@@ -6,14 +10,11 @@ from branches.models import Branches
 
 
 class Order(models.Model):
+    # Определения типов и статусов
     TYPE_CHOICES = [
         ("takeaway", "На вынос"),
         ("inplace", "В заведении"),
     ]
-    order_type = models.CharField(
-        max_length=20, choices=TYPE_CHOICES, default="takeaway"
-    )
-
     STATUS_CHOICES = [
         ("new", "Новый"),
         ("in_process", "В процессе"),
@@ -22,6 +23,9 @@ class Order(models.Model):
         ("completed", "Завершено"),
     ]
 
+    order_type = models.CharField(
+        max_length=20, choices=TYPE_CHOICES, default="takeaway"
+    )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="new")
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -41,18 +45,40 @@ class Order(models.Model):
         self._prev_status = self.status
 
     def save(self, *args, **kwargs):
-        if self.pk is not None and not self._prev_status:
-            self._prev_status = Order.objects.get(pk=self.pk).status
-
-        super().save(*args, **kwargs)
-
-        if not self.pk:
-            self.total_price = (
-                    sum(item.get_cost() for item in self.items.all()) - self.bonuses_used
-            )
+        is_new = self._state.adding
+        if is_new:
             super().save(*args, **kwargs)
+            self.update_total_price()
+        else:
+            if self.status != self._prev_status:
+                self.update_total_price()
+                self.notify_status_change()
+                self._prev_status = self.status
+            else:
+                super().save(*args, **kwargs)
 
-        self._prev_status = self.status
+    def update_total_price(self):
+        self.total_price = (
+            sum(item.get_cost() for item in self.items.all()) - self.bonuses_used
+        )
+        super().save(update_fields=["total_price"])
+
+    def notify_status_change(self):
+        if self.user:
+            channel_layer = get_channel_layer()
+            message = {
+                "type": "order_status_change",
+                "order_id": self.id,
+                "status": self.status,
+            }
+
+            async_to_sync(channel_layer.group_send)(
+                f"user_{self.user.id}",
+                {
+                    "type": "websocket.send",
+                    "text": json.dumps(message),
+                },
+            )
 
     def apply_bonuses(self, bonuses_amount):
         if self.user.bonuses < bonuses_amount:
