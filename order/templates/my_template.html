@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h1>WebSocket Test</h1>
+    <button id="connectButton">Connect</button>
+    <button id="disconnectButton" disabled>Disconnect</button>
+    <div id="status">Disconnected</div>
+    <h2>Messages</h2>
+    <div id="messages"></div>
+
+    <script>
+        var socket;
+
+        document.getElementById('connectButton').onclick = function() {
+            socket = new WebSocket('ws://localhost:8080/ws/some_path/');
+
+            socket.onopen = function() {
+                document.getElementById('status').innerText = 'Connected';
+                document.getElementById('connectButton').disabled = true;
+                document.getElementById('disconnectButton').disabled = false;
+            };
+
+            socket.onmessage = function(e) {
+                var message = JSON.parse(e.data);
+                var messageElement = document.createElement('div');
+                messageElement.innerText = 'Message: ' + message.content;
+                document.getElementById('messages').appendChild(messageElement);
+            };
+
+            socket.onclose = function() {
+                document.getElementById('status').innerText = 'Disconnected';
+                document.getElementById('connectButton').disabled = false;
+                document.getElementById('disconnectButton').disabled = true;
+            };
+        };
+
+        document.getElementById('disconnectButton').onclick = function() {
+            socket.close();
+        };
+    </script>
+</body>
+</html>

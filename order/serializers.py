@@ -7,26 +7,28 @@ from .models import Order, OrderItem
 class OrderMenuHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Menu
-        fields = ['image', 'name', 'description', 'price']
+        fields = ["image", "name", "description", "price"]
 
 
 class OrderExtraProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExtraItem
-        fields = ['name', 'price']
+        fields = ["name", "price"]
 
 
 class MTOSerializer(serializers.ModelSerializer):
-    menu_detail = OrderMenuHistorySerializer(source='menu', read_only=True)
-    extra_product_detail = OrderExtraProductSerializer(source='extra_product', read_only=True)
+    id = serializers.IntegerField(read_only=True)
+    menu_detail = OrderMenuHistorySerializer(source="menu", read_only=True)
+    extra_product_detail = OrderExtraProductSerializer(
+        source="extra_product", read_only=True
+    )
 
     class Meta:
         model = OrderItem
         fields = [
-            "menu",
+            "id",
             "menu_detail",
             "menu_quantity",
-            "extra_product",
             "extra_product_detail",
             "extra_product_quantity",
         ]
@@ -66,7 +68,7 @@ class OrderSerializer(serializers.ModelSerializer):
 class OrderBranchInHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Branches
-        fields = ('image', 'name')
+        fields = ("image", "name")
 
 
 class OrderHistorySerializer(serializers.ModelSerializer):
