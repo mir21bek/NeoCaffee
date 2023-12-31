@@ -19,19 +19,23 @@ class AdminLoginView(generics.GenericAPIView):
         try:
             user = BaseUser.objects.get(login=login)
 
-            if user.is_verify:
-                if user.role == "admin":
-                    refresh = RefreshToken.for_user(user)
-                    return Response(
-                        {"refresh": str(refresh), "access": str(refresh.access_token)},
-                        status=status.HTTP_200_OK,
-                    )
-                else:
-                    return Response({"message": "User is not an admin."})
+            if not user.is_verify:
+                return Response({"message": "User is not verified."},
+                                status=status.HTTP_401_UNAUTHORIZED)
 
-        except ObjectDoesNotExist:
+            if user.role != "admin":
+                return Response({"message": "User is not an admin."},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            refresh = RefreshToken.for_user(user)
             return Response(
-                {"error": "User with this login does not exist. "},
+                {"refresh": str(refresh), "access": str(refresh.access_token)},
+                status=status.HTTP_200_OK,
+            )
+
+        except BaseUser.DoesNotExist:
+            return Response(
+                {"error": "User with this login does not exist."},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
