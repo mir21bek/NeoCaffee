@@ -211,9 +211,8 @@ class StaffByBranchView(generics.ListAPIView):
     permission_classes = [IsAdminUser]
 
     def get_queryset(self):
-        branch_id = self.kwargs["branch_id"]
         queryset = BaseUser.objects.filter(
-            branch_id=branch_id, role__in=["waiter", "barista"]
+            role__in=["waiter", "barista"]
         )
         return queryset
 
