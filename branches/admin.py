@@ -1,10 +1,9 @@
 from django.contrib import admin
-from .models import Branches, CoffeeShop
+from django.contrib.admin import ModelAdmin
+
+from .models import Branches
 
 
-@admin.register(CoffeeShop)
-class BranchesAdmin(admin.ModelAdmin):
-    filter_horizontal = ("category", "menu")
-
-
-admin.site.register(Branches)
+@admin.register(Branches)
+class BranchesAdminModel(ModelAdmin):
+    list_display = ("name", "phone_number", "address")

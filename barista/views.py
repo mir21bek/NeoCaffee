@@ -1,9 +1,9 @@
+from django.http import Http404
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.response import Response
-from administrator.permissions import IsBarista, IsAdminUser
-from customers.models import BaseUser
+from administrator.permissions import IsBarista, IsAdminUser, IsWaiter
 from menu.models import Menu
 from menu.serializers import MenuSerializer
 from order.models import Order
@@ -12,17 +12,21 @@ from .serializers import (
     BaristaOrderSerializers,
     OrderStatusUpdateSerializer,
     BaristaProfileSerializer,
+    BaristaOrderSerializer,
 )
 
 
 class OrdersView(APIView):
+    permission_classes = [IsBarista | IsAdminUser]
+
     def get(self, request, *args, **kwargs):
-        status = request.query_params.get("status", None)
+        user_branch = request.user.branch
+        order_status = request.query_params.get("status", None)
         order_type = request.query_params.get("type", None)
 
-        orders = Order.objects.all()
-        if status:
-            orders = orders.filter(status=status)
+        orders = Order.objects.filter(branch=user_branch)
+        if order_status:
+            orders = orders.filter(order_status=order_status)
         if order_type:
             orders = orders.filter(order_type=order_type)
         orders = orders.order_by("-created")
@@ -32,7 +36,7 @@ class OrdersView(APIView):
 
 
 class UpdateStatusAPIView(APIView):
-    permission_classes = [IsBarista | IsAdminUser]
+    permission_classes = [IsBarista | IsAdminUser | IsWaiter]
 
     @swagger_auto_schema(request_body=OrderStatusUpdateSerializer)
     def post(self, request, *args, **kwargs):
@@ -40,8 +44,10 @@ class UpdateStatusAPIView(APIView):
         if serializer.is_valid():
             order_id = serializer.validated_data["order_id"]
             new_status = serializer.validated_data["new_status"]
+
+            user_branch = request.user.branch
             try:
-                order = Order.objects.get(id=order_id)
+                order = Order.objects.get(id=order_id, branch=user_branch)
             except Order.DoesNotExist:
                 return Response(
                     {"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND
@@ -66,21 +72,34 @@ class MenuListApiView(generics.ListAPIView):
     """
 
     serializer_class = MenuSerializer
-    # permission_classes = [IsBarista]
+    permission_classes = [IsBarista | IsAdminUser]
 
     def get_queryset(self):
+        user = self.request.user
+
+        if user.branch:
+            branch_id = user.branch.id
+        else:
+            raise Http404("Сотрудник не привязан к этому филиалу")
+
         queryset = Menu.objects.select_related("category", "branch").prefetch_related(
             "extra_product"
         )
         category_slug = self.kwargs.get("category_slug")
-        branch_id = self.kwargs.get("branch_id")
 
         if category_slug:
             queryset = queryset.filter(category__slug=category_slug)
 
-        if branch_id:
-            queryset = queryset.filter(branch_id=branch_id)
+        queryset = queryset.filter(branch_id=branch_id)
         return queryset
+
+
+class BaristaOrderCreateAPIView(generics.CreateAPIView):
+    serializer_class = BaristaOrderSerializer
+    permission_classes = [IsBarista | IsAdminUser]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class BaristaProfileAPIView(generics.ListCreateAPIView):
