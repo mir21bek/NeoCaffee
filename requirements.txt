@@ -16,6 +16,7 @@ defusedxml==0.7.1
 distlib==0.3.7
 Django==4.2.6
 django-allauth==0.58.2
+django-cloudinary-storage==0.3.0
 django-cors-headers==4.3.0
 django-cloudinary-storage==0.3.0
 django-extensions==3.2.3
