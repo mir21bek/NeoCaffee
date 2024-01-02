@@ -117,6 +117,8 @@ class Order(models.Model):
         return False
 
     class Meta:
+        verbose_name = "Заказ"
+        verbose_name_plural = "Заказы"
         ordering = ["-created"]
         indexes = [models.Index(fields=["-created"])]
 

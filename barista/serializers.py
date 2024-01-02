@@ -1,11 +1,18 @@
 from rest_framework import serializers
 
-from order.models import Order
+from order.models import Order, OrderItem
 from customers.models import BaseUser
-
 from django.contrib.auth import get_user_model
 
+from order.serializers import OrderMenuHistorySerializer, OrderExtraProductSerializer
+
 User = get_user_model()
+
+
+class MenuItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = ("id", "menu_quantity", "menu")
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -16,32 +23,41 @@ class UserSerializer(serializers.ModelSerializer):
 
 class BaristaOrderSerializers(serializers.ModelSerializer):
     user_details = UserSerializer(source="user", read_only=True)
+    items = MenuItemSerializer(many=True)
 
     class Meta:
         model = Order
         fields = (
             "order_type",
             "status",
-            "custom_order_id",
             "user_details",
-            "menu",
+            "items",
             "created",
-            "updated",
         )
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         user = instance.user
 
-        if instance.order_type == "inplace" and user.role == "waiter":
+        if instance.order_type == "inplace" and user.position == "waiter":
             representation["user_details"] = {
                 "username": user.first_name,
-                "role": "Официант",
+                "position": "Официант",
             }
         elif instance.order_type == "takeaway" and user.role == "client":
             representation["user_details"] = {
                 "username": user.first_name,
                 "role": "Клиент",
+            }
+        elif instance.order_type == "takeaway" and user.position == "barista":
+            representation["user_details"] = {
+                "username": user.first_name,
+                "position": "Бариста",
+            }
+        elif instance.order_type == "takeaway" and user.role == "admin":
+            representation["user_details"] = {
+                "username": user.first_name,
+                "role": "Менеджер",
             }
 
         return representation
@@ -89,3 +105,42 @@ class BaristaProfileSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance
+
+
+class BaristaOrderItemSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    menu_detail = OrderMenuHistorySerializer(source="menu", read_only=True)
+    extra_product_detail = OrderExtraProductSerializer(
+        source="extra_product", read_only=True
+    )
+
+    class Meta:
+        model = OrderItem
+        fields = [
+            "id",
+            "menu_detail",
+            "menu_quantity",
+            "extra_product_detail",
+            "extra_product_quantity",
+        ]
+
+
+class BaristaOrderSerializer(serializers.ModelSerializer):
+    items = BaristaOrderItemSerializer(many=True)
+
+    class Meta:
+        model = Order
+        fields = [
+            "id",
+            "created",
+            "total_price",
+            "items",
+        ]
+
+    def create(self, validated_data):
+        items_data = validated_data.pop("items", [])
+        order = Order.objects.create(**validated_data)
+
+        for item in items_data:
+            OrderItem.objects.create(order=order, **item)
+        return order

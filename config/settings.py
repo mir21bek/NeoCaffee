@@ -56,12 +56,12 @@ INSTALLED_APPS = [
     "barista.apps.BaristaConfig",
     "notifications.apps.NotificationsConfig",
     "channels",
-    # "debug_toolbar",
+    "debug_toolbar",
 ]
 
 
 MIDDLEWARE = [
-    # "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -152,13 +152,13 @@ STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 MEDIA_URL = "/media/"
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': config('CLOUD_NAME'),
-    'API_KEY': config('API_KEY'),
-    'API_SECRET': config('API_SECRET'),
+    "CLOUD_NAME": config("CLOUD_NAME"),
+    "API_KEY": config("API_KEY"),
+    "API_SECRET": config("API_SECRET"),
 }
 
 
@@ -238,7 +238,8 @@ CHANNEL_LAYERS = {
         },
     },
 }
-#
-# INTERNAL_IPS = [
-#     '127.0.0.1',
-# ]
+
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]

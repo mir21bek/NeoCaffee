@@ -37,6 +37,10 @@ class Branches(models.Model):
     sunday_start_time = models.TimeField(null=True, blank=True)
     sunday_end_time = models.TimeField(null=True, blank=True)
 
+    class Meta:
+        verbose_name = "Филиал"
+        verbose_name_plural = "Филиалы"
+
     def __str__(self):
         return self.name
 
