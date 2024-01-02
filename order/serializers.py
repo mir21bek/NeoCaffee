@@ -79,6 +79,7 @@ class OrderHistorySerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             "branch",
+            "bonuses_used",
             "created",
             "items",
         ]

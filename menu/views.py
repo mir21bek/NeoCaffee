@@ -14,7 +14,7 @@ from .serializers import (
 )
 
 
-class CategoryApiView(APIView):
+class CategoryApiView(generics.ListAPIView):
     """Представление для получения списка всех категорий.
 
     Это представление позволяет только чтение (GET) и требует аутентификации пользователя.
@@ -22,15 +22,7 @@ class CategoryApiView(APIView):
 
     serializer_class = CategorySerializer
     # permission_classes = [IsClientUser]
-
-    def get(self, request, *args, **kwargs):
-        queryset = Category.objects.all()
-        branch_id = request.query_params.get("branch_id", None)
-
-        if branch_id:
-            queryset = queryset.filter(Branches, branch__id=branch_id)
-        serializer = CategorySerializer(queryset, many=True)
-        return Response(serializer.data)
+    queryset = Category.objects.all()
 
 
 class MenuApiView(generics.ListAPIView):
