@@ -21,7 +21,7 @@ class CategoryApiView(generics.ListAPIView):
     """
 
     serializer_class = CategorySerializer
-    # permission_classes = [IsClientUser]
+    permission_classes = [IsClientUser]
     queryset = Category.objects.all()
 
 
