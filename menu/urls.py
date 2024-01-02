@@ -4,7 +4,7 @@ from .views import *
 
 urlpatterns = [
     path(
-        "list-category/<int:branch_id>/",
+        "list-category/",
         CategoryApiView.as_view(),
         name="list-category",
     ),

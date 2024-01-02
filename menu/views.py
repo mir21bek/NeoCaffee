@@ -1,9 +1,12 @@
 from django.db.models import Count
 from django.utils import timezone
 from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.generics import get_object_or_404
 
 from administrator.permissions import IsClientUser
+from branches.models import Branches
 from .models import Category, Menu
 from .serializers import (
     CategorySerializer,
@@ -11,22 +14,23 @@ from .serializers import (
 )
 
 
-class CategoryApiView(generics.ListAPIView):
+class CategoryApiView(APIView):
     """Представление для получения списка всех категорий.
 
     Это представление позволяет только чтение (GET) и требует аутентификации пользователя.
     """
 
     serializer_class = CategorySerializer
-    permission_classes = [IsClientUser]
+    # permission_classes = [IsClientUser]
 
-    def get_queryset(self):
+    def get(self, request, *args, **kwargs):
         queryset = Category.objects.all()
-        branch_id = self.kwargs.get("branch_id")
+        branch_id = request.query_params.get("branch_id", None)
 
         if branch_id:
-            queryset = queryset.filter(branch_id=branch_id)
-        return queryset
+            queryset = queryset.filter(Branches, branch__id=branch_id)
+        serializer = CategorySerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class MenuApiView(generics.ListAPIView):
