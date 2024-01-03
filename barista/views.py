@@ -65,33 +65,29 @@ class UpdateStatusAPIView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class MenuListApiView(generics.ListAPIView):
+class MenuListApiView(APIView):
     """Представление для получения списка доступных блюд.
 
     Это представление позволяет только чтение (GET) и требует аутентификации пользователя.
     """
-
-    serializer_class = MenuSerializer
     permission_classes = [IsBarista | IsAdminUser]
 
-    def get_queryset(self):
-        user = self.request.user
-
-        if user.branch:
-            branch_id = user.branch.id
-        else:
-            raise Http404("Сотрудник не привязан к этому филиалу")
-
-        queryset = Menu.objects.select_related("category", "branch").prefetch_related(
+    def get(self, request, *args, **kwargs):
+        queryset = Menu.objects.select_related("category").prefetch_related(
             "extra_product"
         )
         category_slug = self.kwargs.get("category_slug")
 
         if category_slug:
             queryset = queryset.filter(category__slug=category_slug)
+        user = self.request.user
 
-        queryset = queryset.filter(branch_id=branch_id)
-        return queryset
+        if user.branch:
+            branch_id = user.branch.id
+        else:
+            raise Http404("Сотрудник не привязан к этому филиалу")
+        serializers = MenuSerializer(queryset, many=True)
+        return Response(serializers.data)
 
 
 class BaristaOrderCreateAPIView(generics.CreateAPIView):
