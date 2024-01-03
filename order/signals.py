@@ -15,10 +15,10 @@ def order_post_save(sender, instance, created, **kwargs):
         instance.apply_cashback()
 
 
-@receiver(pre_save, sender=OrderItem)
-def update_stock_on_order(sender, instance, **kwargs):
-    """
-    Обновить запасы на складе при создании заказа.
-    """
-    for ingredient in instance.menu.menu_ingredients.all():
-        ingredient.product.decrease_stock(ingredient.quantity_used * instance.menu_quantity)
+# @receiver(pre_save, sender=OrderItem)
+# def update_stock_on_order(sender, instance, **kwargs):
+#     """
+#     Обновить запасы на складе при создании заказа.
+#     """
+#     for ingredient in instance.menu.menu_ingredients.all():
+#         ingredient.product.decrease_stock(ingredient.quantity_used * instance.menu_quantity)
