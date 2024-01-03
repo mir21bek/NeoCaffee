@@ -2,6 +2,7 @@ from rest_framework import serializers
 from branches.models import Branches
 from menu.models import Menu, ExtraItem
 from .models import Order, OrderItem
+from django.db import transaction
 
 
 class OrderMenuHistorySerializer(serializers.ModelSerializer):
@@ -58,10 +59,16 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         items_data = validated_data.pop("items", [])
-        order = Order.objects.create(**validated_data)
 
-        for item in items_data:
-            OrderItem.objects.create(order=order, **item)
+        try:
+            with transaction.atomic():
+                order = Order.objects.create(**validated_data)
+
+                for item in items_data:
+                    OrderItem.objects.create(order=order, **item)
+        except Exception as e:
+            raise e
+
         return order
 
 

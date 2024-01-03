@@ -46,16 +46,14 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         is_new = self._state.adding
-        if is_new:
+        if is_new or self.status != self._prev_status:
             super().save(*args, **kwargs)
             self.update_total_price()
-        else:
-            if self.status != self._prev_status:
-                self.update_total_price()
-                # self.notify_status_change()
+            if not is_new:
                 self._prev_status = self.status
-            else:
-                super().save(*args, **kwargs)
+                # self.notify_status_change()
+        else:
+            super().save(*args, **kwargs)
 
     def update_total_price(self):
         self.total_price = (
