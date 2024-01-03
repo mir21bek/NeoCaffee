@@ -76,18 +76,22 @@ class MenuListApiView(APIView):
         queryset = Menu.objects.select_related("category").prefetch_related(
             "extra_product"
         )
-        category_slug = self.kwargs.get("category_slug")
 
-        if category_slug:
-            queryset = queryset.filter(category__slug=category_slug)
         user = self.request.user
 
         if user.branch:
             branch_id = user.branch.id
         else:
             raise Http404("Сотрудник не привязан к этому филиалу")
-        serializers = MenuSerializer(queryset, many=True)
-        return Response(serializers.data)
+
+        category_slug = self.kwargs.get("category_slug")
+
+        if category_slug:
+            queryset = queryset.filter(category__slug=category_slug)
+            serializers = MenuSerializer(queryset, many=True)
+            return Response(serializers.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class BaristaOrderCreateAPIView(generics.CreateAPIView):

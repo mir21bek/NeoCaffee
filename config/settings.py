@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "barista.apps.BaristaConfig",
     "notifications.apps.NotificationsConfig",
-    "channels",
+    # "channels",
     "debug_toolbar",
 ]
 
@@ -92,7 +92,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
-ASGI_APPLICATION = "config.routing.application"
+# ASGI_APPLICATION = "config.routing.application"
 
 
 # Database
@@ -230,14 +230,14 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_AGE = 1209600
 
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
-    },
-}
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [("127.0.0.1", 6379)],
+#         },
+#     },
+# }
 
 
 INTERNAL_IPS = [

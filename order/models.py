@@ -52,7 +52,7 @@ class Order(models.Model):
         else:
             if self.status != self._prev_status:
                 self.update_total_price()
-                self.notify_status_change()
+                # self.notify_status_change()
                 self._prev_status = self.status
             else:
                 super().save(*args, **kwargs)
@@ -63,22 +63,22 @@ class Order(models.Model):
         )
         super().save(update_fields=["total_price"])
 
-    def notify_status_change(self):
-        if self.user:
-            channel_layer = get_channel_layer()
-            message = {
-                "type": "order_status_change",
-                "order_id": self.id,
-                "status": self.status,
-            }
-
-            async_to_sync(channel_layer.group_send)(
-                f"user_{self.user.id}",
-                {
-                    "type": "websocket.send",
-                    "text": json.dumps(message),
-                },
-            )
+    # def notify_status_change(self):
+    #     if self.user:
+    #         channel_layer = get_channel_layer()
+    #         message = {
+    #             "type": "order_status_change",
+    #             "order_id": self.id,
+    #             "status": self.status,
+    #         }
+    #
+    #         async_to_sync(channel_layer.group_send)(
+    #             f"user_{self.user.id}",
+    #             {
+    #                 "type": "websocket.send",
+    #                 "text": json.dumps(message),
+    #             },
+    #         )
 
     def apply_bonuses(self, bonuses_amount):
         if self.user.bonuses < bonuses_amount:

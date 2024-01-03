@@ -9,16 +9,16 @@ urlpatterns = [
         name="list-category",
     ),
     path(
-        "list-menu/<int:branch_id>/",
+        "list-menu/",
         MenuApiView.as_view(),
         name="list-menu",
     ),
     path(
-        "menu-list/<str:category_slug><int:branch_id>/",
+        "menu-list/<str:category_slug>/",
         MenuListApiView.as_view(),
         name="menu-list",
     ),
     path(
-        "populars/<int:branch_id>/", PopularDishesView.as_view(), name="popular-dishes"
+        "populars/", PopularDishesView.as_view(), name="popular-dishes"
     ),
 ]

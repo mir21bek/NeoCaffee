@@ -6,7 +6,7 @@ from .models import Category, Menu, ExtraItem
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ("name", "image")
+        fields = ("name", "slug", "image")
 
 
 class ExtraItemSerializer(serializers.ModelSerializer):
