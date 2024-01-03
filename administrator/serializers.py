@@ -95,7 +95,6 @@ class AdminCategorySerializer(serializers.ModelSerializer):
 
 
 class MenuIngredientsSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Ingredients
         fields = ("product", "quantity_used", "unit")

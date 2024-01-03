@@ -4,22 +4,21 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('menu', '0014_alter_category_slug'),
+        ("menu", "0014_alter_category_slug"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='category',
+            name="category",
             unique_together=set(),
         ),
         migrations.RemoveField(
-            model_name='menu',
-            name='branch',
+            model_name="menu",
+            name="branch",
         ),
         migrations.RemoveField(
-            model_name='category',
-            name='branch',
+            model_name="category",
+            name="branch",
         ),
     ]

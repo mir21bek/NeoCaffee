@@ -20,12 +20,16 @@ class AdminLoginView(generics.GenericAPIView):
             user = BaseUser.objects.get(login=login)
 
             if not user.is_verify:
-                return Response({"message": "User is not verified."},
-                                status=status.HTTP_401_UNAUTHORIZED)
+                return Response(
+                    {"message": "User is not verified."},
+                    status=status.HTTP_401_UNAUTHORIZED,
+                )
 
             if user.role != "admin":
-                return Response({"message": "User is not an admin."},
-                                status=status.HTTP_403_FORBIDDEN)
+                return Response(
+                    {"message": "User is not an admin."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
 
             refresh = RefreshToken.for_user(user)
             return Response(
@@ -215,9 +219,7 @@ class StaffByBranchView(generics.ListAPIView):
     permission_classes = [IsAdminUser]
 
     def get_queryset(self):
-        queryset = BaseUser.objects.filter(
-            role__in=["waiter", "barista"]
-        )
+        queryset = BaseUser.objects.filter(role__in=["waiter", "barista"])
         return queryset
 
 

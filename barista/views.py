@@ -70,6 +70,7 @@ class MenuListApiView(APIView):
 
     Это представление позволяет только чтение (GET) и требует аутентификации пользователя.
     """
+
     permission_classes = [IsBarista | IsAdminUser]
 
     def get(self, request, *args, **kwargs):
@@ -91,7 +92,9 @@ class MenuListApiView(APIView):
             serializers = MenuSerializer(queryset, many=True)
             return Response(serializers.data, status=status.HTTP_200_OK)
         else:
-            return Response({"error": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Category not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
 
 class BaristaOrderCreateAPIView(generics.CreateAPIView):
