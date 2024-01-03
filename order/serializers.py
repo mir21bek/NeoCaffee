@@ -28,8 +28,10 @@ class MTOSerializer(serializers.ModelSerializer):
         model = OrderItem
         fields = [
             "id",
+            "menu",
             "menu_detail",
             "menu_quantity",
+            "extra_product",
             "extra_product_detail",
             "extra_product_quantity",
         ]
