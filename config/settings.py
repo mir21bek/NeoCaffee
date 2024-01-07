@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "barista.apps.BaristaConfig",
+    "waiter.apps.WaiterConfig",
     "notifications.apps.NotificationsConfig",
     # "channels",
     "debug_toolbar",
