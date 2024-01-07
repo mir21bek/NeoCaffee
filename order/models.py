@@ -1,16 +1,14 @@
-import json
 from decimal import Decimal
-
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 from django.db import models
 from django.conf import settings
 from menu.models import Menu, ExtraItem
 from branches.models import Branches
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Order(models.Model):
-    # Определения типов и статусов
     TYPE_CHOICES = [
         ("takeaway", "На вынос"),
         ("inplace", "В заведении"),
@@ -56,10 +54,9 @@ class Order(models.Model):
             super().save(*args, **kwargs)
 
     def update_total_price(self):
-        self.total_price = (
-            sum(item.get_cost() for item in self.items.all()) - self.bonuses_used
-        )
-        super().save(update_fields=["total_price"])
+        total_price = (sum(item.get_cost() for item in self.items.all()))
+        amount = self.total_price = total_price
+        return max(amount - self.bonuses_used, Decimal("0.00"))
 
     # def notify_status_change(self):
     #     if self.user:
@@ -79,19 +76,28 @@ class Order(models.Model):
     #         )
 
     def apply_bonuses(self, bonuses_amount):
+        logger.info(f"Начало применения бонусов: {bonuses_amount}, текущий баланс клиента: {self.user.bonuses}")
         if self.user.bonuses < bonuses_amount:
             raise ValueError("Недостаточно бонусов")
         self.user.bonuses -= bonuses_amount
         self.bonuses_used = bonuses_amount
         self.user.save()
 
+        logger.info(f"Конец применения бонусов, новый баланс: {self.user.bonuses}")
+
+        total_cost = self.update_total_price()
+        return max(total_cost, Decimal("0.00"))
+
     def apply_cashback(self):
-        if self.status == "completed" and self.user and self.user.role == "client":
-            cashback = self.total_price * Decimal("0.05")
-            self.user.bonuses += cashback
-            self.user.save()
+        if self.status != self._prev_status and self.status == "completed":
+            total_price = self.update_total_price()
+            cashback = total_price * Decimal("0.05")
+            if self.user and self.user.role == "client":
+                self.user.bonuses += cashback
+                self.user.save()
             return cashback
         return Decimal("0.00")
+
 
     def set_in_process(self):
         if self.status == "new":
@@ -126,9 +132,7 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
-    menu = models.ForeignKey(
-        Menu, on_delete=models.CASCADE, related_name="order_items"
-    )
+    menu = models.ForeignKey(Menu, on_delete=models.CASCADE, related_name="order_items")
     menu_quantity = models.PositiveIntegerField(default=1)
     extra_product = models.ForeignKey(
         ExtraItem,
@@ -151,8 +155,3 @@ class OrderItem(models.Model):
             else Decimal("0")
         )
         return menu_cost + extra_cost
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.order:
-            self.order.save()

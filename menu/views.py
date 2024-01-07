@@ -51,6 +51,13 @@ class MenuListApiView(generics.ListAPIView):
         return queryset
 
 
+class MenuDetailAPIView(generics.RetrieveAPIView):
+    queryset = Menu.objects.select_related("category")
+    serializer_class = MenuSerializer
+    permission_classes = [IsClientUser]
+    lookup_field = "id"
+
+
 class PopularDishesView(generics.ListAPIView):
     serializer_class = MenuSerializer
     permission_classes = [IsClientUser]

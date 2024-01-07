@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from administrator.models import Ingredients
+from menu.models import Menu
 from order.models import Order, OrderItem
 from customers.models import BaseUser
 from django.contrib.auth import get_user_model
@@ -7,6 +9,20 @@ from django.contrib.auth import get_user_model
 from order.serializers import OrderMenuHistorySerializer, OrderExtraProductSerializer
 
 User = get_user_model()
+
+
+class BaristaAllMenuSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ingredients
+        fields = ("product", "unit")
+
+
+class BaristaMenuDetailSerializer(serializers.ModelSerializer):
+    unit = BaristaAllMenuSerializer(many=True)
+
+    class Meta:
+        model = Menu
+        fields = ("name", "description", "unit")
 
 
 class MenuItemSerializer(serializers.ModelSerializer):
@@ -22,6 +38,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class BaristaOrderSerializers(serializers.ModelSerializer):
+    order_type = serializers.ChoiceField(choices=Order.TYPE_CHOICES)
+    status = serializers.ChoiceField(choices=Order.STATUS_CHOICES)
     user_details = UserSerializer(source="user", read_only=True)
     items = MenuItemSerializer(many=True)
 

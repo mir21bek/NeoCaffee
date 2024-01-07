@@ -1,4 +1,5 @@
 from django.http import Http404
+from drf_yasg import openapi
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import generics
@@ -12,21 +13,37 @@ from .serializers import (
     BaristaOrderSerializers,
     OrderStatusUpdateSerializer,
     BaristaProfileSerializer,
-    BaristaOrderSerializer,
+    BaristaOrderSerializer, BaristaMenuDetailSerializer,
 )
 
 
 class OrdersView(APIView):
-    permission_classes = [IsBarista | IsAdminUser]
+    # permission_classes = [IsBarista | IsAdminUser]
 
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "status",
+                openapi.IN_QUERY,
+                description="Статус заказа",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "order_type",
+                openapi.IN_QUERY,
+                description="Тип заказа",
+                type=openapi.TYPE_STRING,
+            ),
+        ]
+    )
     def get(self, request, *args, **kwargs):
-        user_branch = request.user.branch
-        order_status = request.query_params.get("status", None)
-        order_type = request.query_params.get("type", None)
+        # user_branch = request.user.branch
+        status = request.query_params.get("status", None)
+        order_type = request.query_params.get("order_type", None)
 
-        orders = Order.objects.filter(branch=user_branch)
-        if order_status:
-            orders = orders.filter(order_status=order_status)
+        orders = Order.objects.all()
+        if status:
+            orders = orders.filter(status=status)
         if order_type:
             orders = orders.filter(order_type=order_type)
         orders = orders.order_by("-created")
@@ -95,6 +112,12 @@ class MenuListApiView(APIView):
             return Response(
                 {"error": "Category not found"}, status=status.HTTP_404_NOT_FOUND
             )
+
+
+class BaristaMenuDetailAPIView(generics.RetrieveAPIView):
+    queryset = Menu.objects.all()
+    serializer_class = BaristaMenuDetailSerializer
+    lookup_field = "id"
 
 
 class BaristaOrderCreateAPIView(generics.CreateAPIView):

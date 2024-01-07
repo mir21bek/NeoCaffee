@@ -18,5 +18,6 @@ urlpatterns = [
         MenuListApiView.as_view(),
         name="menu-list",
     ),
+    path("menu-detail/<int:id>/", MenuDetailAPIView.as_view(), name="menu-detail"),
     path("populars/", PopularDishesView.as_view(), name="popular-dishes"),
 ]

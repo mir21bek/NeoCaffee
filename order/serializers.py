@@ -18,7 +18,6 @@ class OrderExtraProductSerializer(serializers.ModelSerializer):
 
 
 class MTOSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
     menu_detail = OrderMenuHistorySerializer(source="menu", read_only=True)
     extra_product_detail = OrderExtraProductSerializer(
         source="extra_product", read_only=True
@@ -28,8 +27,8 @@ class MTOSerializer(serializers.ModelSerializer):
         model = OrderItem
         fields = [
             "id",
-            "menu",
             "menu_detail",
+            "menu",
             "menu_quantity",
             "extra_product",
             "extra_product_detail",
@@ -49,7 +48,6 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "order_type",
-            "status",
             "branch",
             "user",
             "bonuses_used",
@@ -61,6 +59,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         items_data = validated_data.pop("items", [])
+        bonuses_amount = validated_data.pop("bonuses_used", 0)
 
         try:
             with transaction.atomic():
@@ -68,6 +67,9 @@ class OrderSerializer(serializers.ModelSerializer):
 
                 for item in items_data:
                     OrderItem.objects.create(order=order, **item)
+
+                if bonuses_amount > 0:
+                    order.apply_bonuses(bonuses_amount)
         except Exception as e:
             raise e
 

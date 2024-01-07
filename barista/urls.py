@@ -6,6 +6,7 @@ from barista.views import (
     BaristaProfileAPIView,
     MenuListApiView,
     BaristaOrderCreateAPIView,
+    BaristaMenuDetailAPIView
 )
 
 urlpatterns = [
@@ -17,5 +18,6 @@ urlpatterns = [
         MenuListApiView.as_view(),
         name="menu-list",
     ),
+    path("menu-detail/<int:id>/", BaristaMenuDetailAPIView.as_view(), name="menu-detail"),
     path("order/create/", BaristaOrderCreateAPIView.as_view()),
 ]

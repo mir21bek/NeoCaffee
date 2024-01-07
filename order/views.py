@@ -15,7 +15,7 @@ class OrderCreateAPIView(generics.CreateAPIView):
         serializer.save(user=self.request.user)
 
 
-class OrderHistory(APIView):
+class OrderHistory(generics.ListAPIView):
     serializer_class = OrderHistorySerializer
     permission_classes = [IsClientUser]
 
