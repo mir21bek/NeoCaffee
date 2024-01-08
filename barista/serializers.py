@@ -14,15 +14,15 @@ User = get_user_model()
 class BaristaAllMenuSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredients
-        fields = ("product", "unit")
+        fields = ("product", "quantity_used", "unit")
 
 
 class BaristaMenuDetailSerializer(serializers.ModelSerializer):
-    unit = BaristaAllMenuSerializer(many=True)
+    menu_ingredients = BaristaAllMenuSerializer(many=True)
 
     class Meta:
         model = Menu
-        fields = ("name", "description", "unit")
+        fields = ("name", "description", "menu_ingredients")
 
 
 class MenuItemSerializer(serializers.ModelSerializer):
@@ -79,6 +79,20 @@ class BaristaOrderSerializers(serializers.ModelSerializer):
             }
 
         return representation
+
+
+class BaristaOrderItemDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = ("menu", "menu_quantity", "extra_product")
+
+
+class BaristaOrderDetailSerializer(serializers.ModelSerializer):
+    items = BaristaOrderItemDetailSerializer(many=True)
+
+    class Meta:
+        model = Order
+        fields = ["items"]
 
 
 class OrderStatusUpdateSerializer(serializers.Serializer):

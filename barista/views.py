@@ -7,18 +7,18 @@ from rest_framework.response import Response
 from administrator.permissions import IsBarista, IsAdminUser, IsWaiter
 from menu.models import Menu
 from menu.serializers import MenuSerializer
-from order.models import Order
+from order.models import Order, OrderItem
 from drf_yasg.utils import swagger_auto_schema
 from .serializers import (
     BaristaOrderSerializers,
     OrderStatusUpdateSerializer,
     BaristaProfileSerializer,
-    BaristaOrderSerializer, BaristaMenuDetailSerializer,
+    BaristaOrderSerializer, BaristaMenuDetailSerializer, BaristaOrderDetailSerializer,
 )
 
 
 class OrdersView(APIView):
-    # permission_classes = [IsBarista | IsAdminUser]
+    permission_classes = [IsBarista | IsAdminUser]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -37,19 +37,26 @@ class OrdersView(APIView):
         ]
     )
     def get(self, request, *args, **kwargs):
-        # user_branch = request.user.branch
-        status = request.query_params.get("status", None)
+        user_branch = request.user.branch
+        type_status = request.query_params.get("status", None)
         order_type = request.query_params.get("order_type", None)
 
         orders = Order.objects.all()
         if status:
-            orders = orders.filter(status=status)
+            orders = orders.filter(status=type_status, user_branch=user_branch)
         if order_type:
             orders = orders.filter(order_type=order_type)
         orders = orders.order_by("-created")
 
         serializer = BaristaOrderSerializers(orders, many=True)
         return Response(serializer.data)
+
+
+class BaristaOrderDetailAPIView(generics.RetrieveAPIView):
+    queryset = Order.objects.all()
+    permission_classes = [IsBarista | IsAdminUser]
+    serializer_class = BaristaOrderDetailSerializer
+    lookup_field = "id"
 
 
 class UpdateStatusAPIView(APIView):
@@ -117,6 +124,7 @@ class MenuListApiView(APIView):
 class BaristaMenuDetailAPIView(generics.RetrieveAPIView):
     queryset = Menu.objects.all()
     serializer_class = BaristaMenuDetailSerializer
+    permission_classes = [IsBarista | IsAdminUser]
     lookup_field = "id"
 
 

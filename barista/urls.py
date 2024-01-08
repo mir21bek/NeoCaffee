@@ -6,11 +6,13 @@ from barista.views import (
     BaristaProfileAPIView,
     MenuListApiView,
     BaristaOrderCreateAPIView,
-    BaristaMenuDetailAPIView
+    BaristaMenuDetailAPIView,
+    BaristaOrderDetailAPIView
 )
 
 urlpatterns = [
     path("orders/", OrdersView.as_view()),
+    path("order-detail/<int:id>/", BaristaOrderDetailAPIView.as_view(), name="order-detail"),
     path("orders/update_status/", UpdateStatusAPIView.as_view()),
     path("barista/profile/", BaristaProfileAPIView.as_view()),
     path(
