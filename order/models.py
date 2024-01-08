@@ -54,7 +54,7 @@ class Order(models.Model):
             super().save(*args, **kwargs)
 
     def update_total_price(self):
-        total_price = (sum(item.get_cost() for item in self.items.all()))
+        total_price = sum(item.get_cost() for item in self.items.all())
         amount = self.total_price = total_price
         return max(amount - self.bonuses_used, Decimal("0.00"))
 
@@ -76,7 +76,9 @@ class Order(models.Model):
     #         )
 
     def apply_bonuses(self, bonuses_amount):
-        logger.info(f"Начало применения бонусов: {bonuses_amount}, текущий баланс клиента: {self.user.bonuses}")
+        logger.info(
+            f"Начало применения бонусов: {bonuses_amount}, текущий баланс клиента: {self.user.bonuses}"
+        )
         if self.user.bonuses < bonuses_amount:
             raise ValueError("Недостаточно бонусов")
         self.user.bonuses -= bonuses_amount
@@ -97,7 +99,6 @@ class Order(models.Model):
                 self.user.save()
             return cashback
         return Decimal("0.00")
-
 
     def set_in_process(self):
         if self.status == "new":

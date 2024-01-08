@@ -3,7 +3,11 @@ from menu.models import Category, Menu
 from administrator.permissions import IsWaiter
 from rest_framework.exceptions import NotFound
 from django.shortcuts import get_object_or_404
-from .serializers import WaiterProfileSerializer, WaiterCategorySerializer, WaiterMenuSerializer
+from .serializers import (
+    WaiterProfileSerializer,
+    WaiterCategorySerializer,
+    WaiterMenuSerializer,
+)
 
 
 class WaiterProfileView(generics.RetrieveAPIView):
@@ -29,10 +33,14 @@ class WaiterMenuView(generics.ListAPIView):
 
     def get_queryset(self):
         waiter = self.request.user
-        category_slug = self.kwargs.get('category_slug')
+        category_slug = self.kwargs.get("category_slug")
 
         if category_slug:
-            category = get_object_or_404(Category, slug=category_slug, branch=waiter.branch)
+            category = get_object_or_404(
+                Category, slug=category_slug, branch=waiter.branch
+            )
         else:
             raise NotFound("Не предоставлен slug категории.")
-        return Menu.objects.filter(branch=waiter.branch, category=category, available=True)
+        return Menu.objects.filter(
+            branch=waiter.branch, category=category, available=True
+        )

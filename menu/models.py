@@ -10,8 +10,13 @@ class Category(models.Model):
         null=True,
         blank=True,
     )
-    branch = models.ForeignKey("branches.Branches", on_delete=models.CASCADE, null=True, verbose_name="Филиал",
-                               related_name="categories")
+    branch = models.ForeignKey(
+        "branches.Branches",
+        on_delete=models.CASCADE,
+        null=True,
+        verbose_name="Филиал",
+        related_name="categories",
+    )
 
     class Meta:
         ordering = ["name"]
@@ -42,8 +47,13 @@ class Menu(models.Model):
     available = models.BooleanField(default=True, verbose_name="В наличии")
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    branch = models.ForeignKey("branches.Branches", on_delete=models.CASCADE, null=True, verbose_name="Филиал",
-                               related_name="menus")
+    branch = models.ForeignKey(
+        "branches.Branches",
+        on_delete=models.CASCADE,
+        null=True,
+        verbose_name="Филиал",
+        related_name="menus",
+    )
 
     class Meta:
         ordering = ["name"]

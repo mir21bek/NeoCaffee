@@ -13,7 +13,9 @@ from .serializers import (
     BaristaOrderSerializers,
     OrderStatusUpdateSerializer,
     BaristaProfileSerializer,
-    BaristaOrderSerializer, BaristaMenuDetailSerializer, BaristaOrderDetailSerializer,
+    BaristaOrderSerializer,
+    BaristaMenuDetailSerializer,
+    BaristaOrderDetailSerializer,
 )
 
 
