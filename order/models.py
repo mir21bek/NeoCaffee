@@ -3,6 +3,8 @@ from django.db import models
 from django.conf import settings
 from menu.models import Menu, ExtraItem
 from branches.models import Branches
+from waiter.models import Table
+from customers.models import BaseUser
 import logging
 
 logger = logging.getLogger(__name__)
@@ -30,10 +32,19 @@ class Order(models.Model):
         on_delete=models.SET_NULL,
         related_name="customer_orders",
         null=True,
+        blank=True,
     )
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     branch = models.ForeignKey(Branches, on_delete=models.SET_NULL, null=True)
     bonuses_used = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True)
+    waiter = models.ForeignKey(
+        BaseUser,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        limit_choices_to={"position": "waiter"},
+    )
     created = models.DateTimeField(auto_now_add=True)
 
     _prev_status = None
