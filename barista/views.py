@@ -61,6 +61,22 @@ class BaristaOrderDetailAPIView(generics.RetrieveAPIView):
     lookup_field = "id"
 
 
+class BaristaOrderChangeDetailAPIView(APIView):
+    def get_object(self, pk):
+        try:
+            return Order.objects.get(pk=pk)
+        except Order.DoesNotExist:
+            return Http404
+
+    def put(self, request, pk):
+        order = self.get_object(pk)
+        serializer = BaristaOrderDetailSerializer(order, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class UpdateStatusAPIView(APIView):
     permission_classes = [IsBarista | IsAdminUser | IsWaiter]
 
@@ -138,7 +154,7 @@ class BaristaOrderCreateAPIView(generics.CreateAPIView):
         serializer.save(user=self.request.user)
 
 
-class BaristaProfileAPIView(generics.ListCreateAPIView):
+class BaristaProfileAPIView(generics.ListAPIView):
     serializer_class = BaristaProfileSerializer
     permission_classes = [IsBarista]
 
