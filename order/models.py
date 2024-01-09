@@ -146,10 +146,8 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE, related_name="order_items")
     menu_quantity = models.PositiveIntegerField(default=1)
-    extra_product = models.ForeignKey(
+    extra_product = models.ManyToManyField(
         ExtraItem,
-        on_delete=models.CASCADE,
-        null=True,
         blank=True,
         related_name="extra_order",
     )

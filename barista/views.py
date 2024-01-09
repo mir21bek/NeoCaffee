@@ -132,7 +132,7 @@ class MenuListApiView(APIView):
         category_slug = self.kwargs.get("category_slug")
 
         if category_slug:
-            queryset = queryset.filter(category__slug=category_slug)
+            queryset = queryset.filter(category__slug=category_slug, branch_id=branch_id)
             serializers = MenuSerializer(queryset, many=True)
             return Response(serializers.data, status=status.HTTP_200_OK)
         else:

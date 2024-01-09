@@ -20,7 +20,7 @@ class OrderExtraProductSerializer(serializers.ModelSerializer):
 class MTOSerializer(serializers.ModelSerializer):
     menu_detail = OrderMenuHistorySerializer(source="menu", read_only=True)
     extra_product_detail = OrderExtraProductSerializer(
-        source="extra_product", read_only=True
+        source="extra_product", read_only=True, many=True
     )
 
     class Meta:
@@ -66,7 +66,11 @@ class OrderSerializer(serializers.ModelSerializer):
                 order = Order.objects.create(**validated_data)
 
                 for item in items_data:
-                    OrderItem.objects.create(order=order, **item)
+                    extra_product_datas = item.pop("extra_product", [])
+                    order_item = OrderItem.objects.create(order=order, **item)
+                    for extra_product_id in extra_product_datas:
+                        extra_product = ExtraItem.objects.get(id=extra_product_id)
+                        order_item.extra_product.add(extra_product)
 
                 if bonuses_amount > 0:
                     order.apply_bonuses(bonuses_amount)
