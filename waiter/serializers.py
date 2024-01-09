@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from menu.models import Category, Menu
+from menu.models import Category, Menu, ExtraItem
 from customers.models import BaseUser
 
 
@@ -41,7 +41,15 @@ class WaiterCategorySerializer(serializers.ModelSerializer):
         fields = ("id", "name", "slug")
 
 
+class WaiterExtraItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExtraItem
+        fields = ("id", "type_extra_product", "name", "price")
+
+
 class WaiterMenuSerializer(serializers.ModelSerializer):
+    extra_product = WaiterExtraItemSerializer(many=True)
+
     class Meta:
         model = Menu
         fields = ("id", "name", "price", "extra_product")

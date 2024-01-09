@@ -60,7 +60,8 @@ class LoginWaiterView(generics.GenericAPIView):
 
                 return Response(
                     {
-                        "message": "Verification code has been sent to your phone number."
+                        "message": "Verification code has been sent to your phone number.",
+                        "phone_number": user.phone_number
                     },
                     status=status.HTTP_200_OK,
                 )
