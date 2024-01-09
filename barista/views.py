@@ -62,6 +62,8 @@ class BaristaOrderDetailAPIView(generics.RetrieveAPIView):
 
 
 class BaristaOrderChangeDetailAPIView(APIView):
+    permission_classes = [IsBarista | IsAdminUser]
+
     def get_object(self, pk):
         try:
             return Order.objects.get(pk=pk)
