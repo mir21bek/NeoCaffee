@@ -38,10 +38,10 @@ class WaiterProfileSerializer(serializers.ModelSerializer):
 class WaiterCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ("id", "name")
+        fields = ("id", "name", "slug")
 
 
 class WaiterMenuSerializer(serializers.ModelSerializer):
     class Meta:
         model = Menu
-        fields = ("id", "name", "price")
+        fields = ("id", "name", "price", "extra_product")
