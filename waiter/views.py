@@ -3,10 +3,15 @@ from menu.models import Category, Menu
 from administrator.permissions import IsWaiter
 from rest_framework.exceptions import NotFound
 from django.shortcuts import get_object_or_404
+from waiter.models import Table
+from order.models import Order
 from .serializers import (
     WaiterProfileSerializer,
     WaiterCategorySerializer,
     WaiterMenuSerializer,
+    TableSerializer,
+    WaiterOrderSerializer,
+    WaiterOrderListSerializer
 )
 
 
@@ -44,3 +49,29 @@ class WaiterMenuView(generics.ListAPIView):
         return Menu.objects.filter(
             branch=waiter.branch, category=category, available=True
         )
+
+
+class TableListView(generics.ListAPIView):
+    serializer_class = TableSerializer
+    permission_classes = [IsWaiter]
+    queryset = Table.objects.all()
+
+
+class OrderCreateView(generics.CreateAPIView):
+    serializer_class = WaiterOrderSerializer
+    permission_classes = [IsWaiter]
+
+    def perform_create(self, serializer):
+        serializer.save(
+            order_type='inplace',
+            branch=self.request.user.branch if hasattr(self.request.user, 'branch') else None,
+            waiter=self.request.user if hasattr(self.request.user, 'id') else None
+        )
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+
+class OrderListView(generics.ListAPIView):
+    queryset = Order.objects.all()
+    serializer_class = WaiterOrderListSerializer
